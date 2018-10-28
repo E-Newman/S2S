@@ -24,6 +24,7 @@ public class EnterIP_Activity extends AppCompatActivity {
     }
 
     public void startT(View view) {
+        byte [] addr = new byte[4];
 
         /* First check the proper field filling */
         int[] fields = {R.id.EditIP1, R.id.EditIP2, R.id.EditIP3, R.id.EditIP4};
@@ -48,9 +49,12 @@ public class EnterIP_Activity extends AppCompatActivity {
                 warn.setText("Значение части IP-адреса не может быть больше 255");
                 return;
             }
+
+            addr[i] = Byte.parseByte(curField.getText().toString());
         }
 
         Intent intent = new Intent(EnterIP_Activity.this, StartTransmissionActivity.class);
+        intent.putExtra("addr", addr);
         startActivity(intent);
     }
 
