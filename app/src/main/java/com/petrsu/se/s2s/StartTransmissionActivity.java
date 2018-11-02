@@ -1,13 +1,20 @@
 package com.petrsu.se.s2s;
 
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.res.Resources;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
+import android.app.Notification;
+import android.app.NotificationManager;
 
 public class StartTransmissionActivity extends AppCompatActivity {
     public String addr;
+    private static final int NOTIFY_ID = 101;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,6 +25,14 @@ public class StartTransmissionActivity extends AppCompatActivity {
     }
 
     public void startTransmission(View view) {
+        // TODO: notification
+
+        /*background mode */
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(startMain);
+
         DataTransfer dt = new DataTransfer();
         dt.execute(addr);
     }
