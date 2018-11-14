@@ -1,63 +1,14 @@
 package com.petrsu.se.s2s;
 
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.ContextWrapper;
-import android.content.res.Resources;
-import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
-import android.util.Log;
 import android.view.View;
 import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.NotificationChannel;
-import android.graphics.Color;
 
 public class StartTransmissionActivity extends AppCompatActivity {
     public String addr;
     private static final int NOTIFY_ID = 101;
-
-    private class StopNotificationChannel extends ContextWrapper {
-        private NotificationManager mManager;
-
-        public StopNotificationChannel(Context base) {
-            super(base);
-            createChannel();
-        }
-
-        public void createChannel() {
-            // create android channel
-            NotificationChannel androidChannel = new NotificationChannel("STOP_CHANNEL_ID",
-                    "STOP_CHANNEL", NotificationManager.IMPORTANCE_DEFAULT);
-            // Sets whether notifications posted to this channel should display notification lights
-            androidChannel.enableLights(true);
-            // Sets whether notification posted to this channel should vibrate.
-            androidChannel.enableVibration(true);
-            // Sets the notification light color for notifications posted to this channel
-            androidChannel.setLightColor(Color.GREEN);
-            // Sets whether notifications posted to this channel appear on the lockscreen or not
-            androidChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
-
-            getManager().createNotificationChannel(androidChannel);
-        }
-
-        private NotificationManager getManager() {
-            if (mManager == null) {
-                mManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            }
-            return mManager;
-        }
-
-        public Notification.Builder getAndroidChannelNotification(String title, String body) {
-            return new Notification.Builder(getApplicationContext(), "STOP_CHANNEL_ID")
-                    .setContentTitle(title)
-                    .setContentText(body)
-                    .setSmallIcon(android.R.drawable.stat_notify_more)
-                    .setAutoCancel(true);
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,9 +22,10 @@ public class StartTransmissionActivity extends AppCompatActivity {
         StopNotificationChannel nc = new StopNotificationChannel(this);
 
         Notification.Builder nb = nc.
-                getAndroidChannelNotification("S2S", "Dratuti");
+                getAndroidChannelNotification("S2S", "Идёт трансляция экрана. Нажмите, чтобы остановить");
 
-        nc.getManager().notify(101, nb.build());
+
+        nc.getManager().notify(NOTIFY_ID, nb.build());
 
         /*background mode */
         Intent startMain = new Intent(Intent.ACTION_MAIN);
