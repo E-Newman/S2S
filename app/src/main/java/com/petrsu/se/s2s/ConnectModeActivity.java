@@ -10,12 +10,14 @@ import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ConnectModeActivity extends AppCompatActivity implements View.OnClickListener {
     private IntentIntegrator qrScan;
     private Button buttonGetIPQR;
+    String IPADDRESS_PATTERN =
+            "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +46,20 @@ public class ConnectModeActivity extends AppCompatActivity implements View.OnCli
         if (result != null) {
             //if qrcode has nothing in it
             if (result.getContents() == null) {
-                Toast.makeText(this, "Result Not Found", Toast.LENGTH_LONG).show(); // #TODO: resolve IP and send it to StartTransmission
+                Toast.makeText(this, "Result Not Found", Toast.LENGTH_LONG).show();
             } else {
                 //if qr contains data
-                Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
+                Pattern ippattern = Pattern.compile(IPADDRESS_PATTERN);
+                Matcher ipm = ippattern.matcher(result.getContents());
+                if (ipm.matches()) {
+                    Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(ConnectModeActivity.this, StartTransmissionActivity.class);
+                    intent.putExtra("addr", result.getContents());
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(this, "Invalid QR code: " + result.getContents(), Toast.LENGTH_LONG).show();
+                }
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
