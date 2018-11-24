@@ -5,8 +5,7 @@ import android.os.Bundle;
 import android.content.Intent;
 import android.view.View;
 import android.app.Notification;
-import android.widget.ProgressBar;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import java.util.concurrent.TimeUnit;
 
@@ -23,22 +22,26 @@ public class StartTransmissionActivity extends AppCompatActivity {
     }
 
     public void startTransmission(View view) {
+        TextView textStatus = (TextView) findViewById(R.id.textStatus);
+        textStatus.setVisibility(View.VISIBLE);
+        textStatus.setText("Ожидание соединения..."); // doesn't appear
+
         TVStatusChecker tvc = new TVStatusChecker();
         tvc.execute(addr);
 
         try {
             tvc.get(3500, TimeUnit.MILLISECONDS);
-        } // wait for timeout; #TODO progressbar
+        } // wait for timeout
         catch (Exception e) {
-            Toast.makeText(this, "При попытке подключения произошла ошибка", Toast.LENGTH_SHORT).show();
+            textStatus.setText(tvc.tvStatus);
         }
 
-        if (tvc.tvStatus == 0) {
+        if (tvc.tvStatus == "Соединение установлено") {
+            textStatus.setVisibility(View.INVISIBLE);
             StopNotificationChannel nc = new StopNotificationChannel(this);
 
             Notification.Builder nb = nc.
                     getAndroidChannelNotification("S2S", "Идёт трансляция экрана. Нажмите, чтобы остановить");
-
 
             nc.getManager().notify(NOTIFY_ID, nb.build());
 
@@ -47,7 +50,11 @@ public class StartTransmissionActivity extends AppCompatActivity {
             startMain.addCategory(Intent.CATEGORY_HOME);
             startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(startMain);
-        } else Toast.makeText(this, "Ошибка: " + tvc.tvStatus, Toast.LENGTH_SHORT).show();
+
+            /* start transmission */
+            DataTransfer dt = new DataTransfer();
+            dt.execute(addr);
+        } else textStatus.setText(tvc.tvStatus);
     }
 
     public void goBack(View view) { // TODO: check the mode and load the proper screen

@@ -8,7 +8,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 class TVStatusChecker extends AsyncTask<String, Void, Integer> {
-    public int tvStatus = -10;
+    public String tvStatus = "Undefined";
 
     @Override
     protected Integer doInBackground(String... args){
@@ -25,7 +25,7 @@ class TVStatusChecker extends AsyncTask<String, Void, Integer> {
             ia = InetAddress.getByName(addria);
         } catch (Exception e) {
             Log.e("FATAL","Failed to resolve IP");
-            tvStatus = -1;
+            tvStatus = "Не удалось получить IP-адрес";
             return -1;
         }
 
@@ -34,7 +34,7 @@ class TVStatusChecker extends AsyncTask<String, Void, Integer> {
             sock.setSoTimeout(3000); // wait for 3 seconds
         } catch (Exception e) {
             Log.e("FATAL","Failed to create the socket");
-            tvStatus = -2;
+            tvStatus = "Не удалось создать сокет";
             return -2;
         }
 
@@ -43,7 +43,7 @@ class TVStatusChecker extends AsyncTask<String, Void, Integer> {
             sock.send(dp);
         } catch (Exception e) {
             Log.e("FATAL","Failed to send datagram");
-            tvStatus = -3;
+            tvStatus = "Не удалось отправить запрос на подключение";
             return -3;
         }
 
@@ -56,38 +56,43 @@ class TVStatusChecker extends AsyncTask<String, Void, Integer> {
             if (ap.getData().toString() == "No") {
                 Log.i("NOPE", "Nope");
                 try {
-                    if (!sock.isClosed()) sock.close();
+                    if (!sock.isClosed()) {
+                        sock.close();
+                        tvStatus = "Отказано в соединении";
+                        return -4;
+                    }
                 } catch (Exception e) {
                     Log.e("FATAL","Socket wasn't closed");
-                    tvStatus = 4;
-                    return -4;
+                    tvStatus = "Ошибка при закрытии сокета";
+                    return -5;
                 } // process?
             }
         } catch (Exception e) {
             Log.e("FATAL","Failed to receive datagram");
-            tvStatus = -5;
-            return -5;
+            tvStatus = "Не удалось получить ответ от телевизора";
+            return -6;
         }
 
         try {
             if (!sock.isClosed()) sock.close();
         } catch (Exception e) {
             Log.e("FATAL","Socket wasn't closed");
-            tvStatus = -6;
-            return -6;
+            tvStatus = "Ошибка при закрытии сокета";
+            return -7;
         }
 
-        tvStatus = 0;
+        tvStatus = "Соединение установлено";
         return 0;
     }
 
     @Override
     protected void onPostExecute(Integer result) {
-        tvStatus = result;
     }
 }
 
 class DataTransfer extends AsyncTask<String, Void, Integer> {
+    public Boolean running = true;
+
     @Override
     protected Integer doInBackground(String... args){
         InetAddress ia;
@@ -113,38 +118,20 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
             return -2;
         }
 
-        DatagramPacket dp = new DatagramPacket(message.getBytes(), message.getBytes().length,  ia, 11111);
-        try {
-            sock.send(dp);
-        } catch (Exception e) {
-            Log.e("FATAL","Failed to send datagram");
-            return -3;
-        }
-
-        byte [] ans = new byte[1024];
-        DatagramPacket ap = new DatagramPacket(ans, ans.length);
-        try {
-            Log.i("ZHDEM", "1");
-            sock.receive(ap);
-            Log.i("PRISHLO", "1");
-            if (ap.getData().toString() == "No") {
-                try {
-                    Log.i("NOPE", "Nope");
-                    if (!sock.isClosed()) sock.close();
-                } catch (Exception e) {
-                    Log.e("FATAL","Socket wasn't closed");
-                    return -4;
-                } // process?
+        while (running) { // send until we are stopped
+            DatagramPacket dp = new DatagramPacket(message.getBytes(), message.getBytes().length, ia, 11111); // swap with img
+            try {
+                sock.send(dp);
+            } catch (Exception e) {
+                Log.e("FATAL", "Failed to send datagram");
+                return -3;
             }
-        } catch (Exception e) {
-            Log.e("FATAL","Failed to recieve datagram");
-            return -3;
         }
 
         try {
             if (!sock.isClosed()) sock.close();
         } catch (Exception e) {
-            Log.e("FATAL","Socket wasn't closed");
+            Log.e("FATAL", "Socket wasn't closed");
             return -4;
         }
 

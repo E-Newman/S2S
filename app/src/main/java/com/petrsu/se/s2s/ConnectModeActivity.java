@@ -46,19 +46,19 @@ public class ConnectModeActivity extends AppCompatActivity implements View.OnCli
         if (result != null) {
             //if qrcode has nothing in it
             if (result.getContents() == null) {
-                Toast.makeText(this, "Result Not Found", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "QR-соде пустой", Toast.LENGTH_LONG).show();
             } else {
                 //if qr contains data
                 //Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
                 Pattern ippattern = Pattern.compile(IPADDRESS_PATTERN);
                 Matcher ipm = ippattern.matcher(result.getContents());
                 if (ipm.matches()) {
-                    Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Просканирован IP-адрес: " + result.getContents(), Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(ConnectModeActivity.this, StartTransmissionActivity.class);
                     intent.putExtra("addr", result.getContents());
                     startActivity(intent);
                 } else {
-                    Toast.makeText(this, "Invalid QR code: " + result.getContents(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Некорректный QR-код. Он содержит: " + result.getContents(), Toast.LENGTH_LONG).show();
                 }
             }
         } else {
