@@ -15,22 +15,21 @@
 package com.example.pvv22.test3;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 /*
- * Details activity class that loads LeanbackDetailsFragment class
+ * MainActivity class that loads {@link MainFragment}.
  */
-public class DetailsActivity extends Activity {
-    public static final String SHARED_ELEMENT_NAME = "hero";
-    public static final String MOVIE = "Movie";
+public class ManualActivity extends Activity {
 
-    /**
-     * Called when the activity is first created.
-     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_details2);
+        setContentView(R.layout.activity_manual);
     }
-
+    public void toMainActivity(View view){
+        startActivity(new Intent(ManualActivity.this, MainActivity.class));
+    }
 }
