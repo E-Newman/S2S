@@ -1,8 +1,11 @@
 package com.petrsu.se.s2s;
 
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Button;
 
+import java.io.ByteArrayOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -73,6 +76,8 @@ class TVStatusChecker extends AsyncTask<String, Void, Integer> {
             return -6;
         }
 
+        /* image getting */
+
         try {
             if (!sock.isClosed()) sock.close();
         } catch (Exception e) {
@@ -92,12 +97,17 @@ class TVStatusChecker extends AsyncTask<String, Void, Integer> {
 
 class DataTransfer extends AsyncTask<String, Void, Integer> {
     public Boolean running = true;
+    private Button findButton;
+
+    public DataTransfer(Button findButton) {
+        this.findButton = findButton;
+    }
 
     @Override
     protected Integer doInBackground(String... args){
         InetAddress ia;
         DatagramSocket sock = null;
-        String message = "Hello from S2S";
+        Bitmap screenToSend;
         String addria = "";
 
         for (String part : args) {
@@ -118,15 +128,23 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
             return -2;
         }
 
-        while (running) { // send until we are stopped
-            DatagramPacket dp = new DatagramPacket(message.getBytes(), message.getBytes().length, ia, 11111); // swap with img
+        //while (running) { // send until we are stopped; test 1 time
+            screenToSend = ScreenRecorder.takeScreenshotOfRootView(findButton); // take the ss
+
+            /* convert & send the ss */
+            ByteArrayOutputStream screenStream = new ByteArrayOutputStream();
+            screenToSend.compress(Bitmap.CompressFormat.PNG, 50, screenStream);
+            byte [] compScreen = screenStream.toByteArray();
+            screenToSend.recycle();
+
+            DatagramPacket dp = new DatagramPacket(compScreen, compScreen.length, ia, 11111);
             try {
                 sock.send(dp);
             } catch (Exception e) {
                 Log.e("FATAL", "Failed to send datagram");
                 return -3;
             }
-        }
+        //}
 
         try {
             if (!sock.isClosed()) sock.close();

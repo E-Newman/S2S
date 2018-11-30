@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.view.View;
 import android.app.Notification;
 import android.widget.TextView;
+import android.widget.Button;
 
 import java.util.concurrent.TimeUnit;
 
@@ -22,9 +23,9 @@ public class StartTransmissionActivity extends AppCompatActivity {
     }
 
     public void startTransmission(View view) {
+        Button buttonStartTransmission = (Button) findViewById(R.id.buttonStartTransmission);
         TextView textStatus = (TextView) findViewById(R.id.textStatus);
-        textStatus.setVisibility(View.VISIBLE);
-        textStatus.setText("Ожидание соединения..."); // doesn't appear
+        buttonStartTransmission.setText("Ожидание соединения...");
 
         TVStatusChecker tvc = new TVStatusChecker();
         tvc.execute(addr);
@@ -34,11 +35,13 @@ public class StartTransmissionActivity extends AppCompatActivity {
         } // wait for timeout
         catch (Exception e) {
             textStatus.setText(tvc.tvStatus);
+            buttonStartTransmission.setText("Начать трансляцию");
         }
 
-        if (tvc.tvStatus == "Соединение установлено") {
+        //if (tvc.tvStatus == "Соединение установлено") { // раскомментить, когда будем перекидываться сообщениями
             textStatus.setVisibility(View.INVISIBLE);
             StopNotificationChannel nc = new StopNotificationChannel(this);
+            buttonStartTransmission.setText("Начать трансляцию");
 
             Notification.Builder nb = nc.
                     getAndroidChannelNotification("S2S", "Идёт трансляция экрана. Нажмите, чтобы остановить");
@@ -52,10 +55,10 @@ public class StartTransmissionActivity extends AppCompatActivity {
             startActivity(startMain);
 
             /* start transmission */
-            DataTransfer dt = new DataTransfer();
+            DataTransfer dt = new DataTransfer((Button) findViewById(R.id.buttonStartTransmission));
             dt.execute(addr);
-        } else textStatus.setText(tvc.tvStatus);
-    }
+        } //else textStatus.setText(tvc.tvStatus);
+    //}
 
     public void goBack(View view) { // TODO: check the mode and load the proper screen
         Intent intent = new Intent(StartTransmissionActivity.this, EnterIP_Activity.class);
