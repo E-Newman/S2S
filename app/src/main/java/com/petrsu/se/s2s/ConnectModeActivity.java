@@ -49,7 +49,6 @@ public class ConnectModeActivity extends AppCompatActivity implements View.OnCli
                 Toast.makeText(this, "QR-соде пустой", Toast.LENGTH_LONG).show();
             } else {
                 //if qr contains data
-                //Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
                 Pattern ippattern = Pattern.compile(IPADDRESS_PATTERN);
                 Matcher ipm = ippattern.matcher(result.getContents());
                 if (ipm.matches()) {

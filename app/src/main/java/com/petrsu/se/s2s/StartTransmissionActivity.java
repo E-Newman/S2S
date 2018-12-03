@@ -20,12 +20,13 @@ public class StartTransmissionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_start_transmission);
         Intent intent = getIntent();
         addr = intent.getStringExtra("addr");
+        Button buttonStartTransmission = (Button) findViewById(R.id.buttonStartTransmission);
+        buttonStartTransmission.setText("Начать трансляцию на " + addr);
     }
 
     public void startTransmission(View view) {
         Button buttonStartTransmission = (Button) findViewById(R.id.buttonStartTransmission);
         TextView textStatus = (TextView) findViewById(R.id.textStatus);
-        buttonStartTransmission.setText("Ожидание соединения...");
 
         TVStatusChecker tvc = new TVStatusChecker();
         tvc.execute(addr);
@@ -35,24 +36,29 @@ public class StartTransmissionActivity extends AppCompatActivity {
         } // wait for timeout
         catch (Exception e) {
             textStatus.setText(tvc.tvStatus);
-            buttonStartTransmission.setText("Начать трансляцию");
         }
 
         //if (tvc.tvStatus == "Соединение установлено") { // раскомментить, когда будем перекидываться сообщениями
             textStatus.setVisibility(View.INVISIBLE);
-            StopNotificationChannel nc = new StopNotificationChannel(this);
-            buttonStartTransmission.setText("Начать трансляцию");
+            StopNotificationChannel nc = new StopNotificationChannel(this, addr);
 
             Notification.Builder nb = nc.
                     getAndroidChannelNotification("S2S", "Идёт трансляция экрана. Нажмите, чтобы остановить");
 
             nc.getManager().notify(NOTIFY_ID, nb.build());
 
-            /*background mode */
-            Intent startMain = new Intent(Intent.ACTION_MAIN);
+            buttonStartTransmission.setText("Идёт трансляция на " + addr);
+            buttonStartTransmission.setEnabled(false); // prohibit to start again or return before stop
+            Button buttonGoBackST = (Button) findViewById(R.id.buttonGoBackST);
+            buttonGoBackST.setEnabled(false);
+            Button buttonBackToMainST = (Button) findViewById(R.id.buttonBackToMainST);
+            buttonBackToMainST.setEnabled(false);
+
+            /*background mode; doesn't fit <8.0 */
+            /*Intent startMain = new Intent(Intent.ACTION_MAIN);
             startMain.addCategory(Intent.CATEGORY_HOME);
             startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(startMain);
+            startActivity(startMain);*/
 
             /* start transmission */
             DataTransfer dt = new DataTransfer((Button) findViewById(R.id.buttonStartTransmission));

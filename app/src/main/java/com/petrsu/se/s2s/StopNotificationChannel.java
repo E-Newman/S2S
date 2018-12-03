@@ -11,10 +11,12 @@ import android.app.PendingIntent;
 
 public class StopNotificationChannel extends ContextWrapper {
     private NotificationManager mManager;
+    private String addr;
 
-    public StopNotificationChannel(Context base) {
+    public StopNotificationChannel(Context base, String addr) { // save ip if the restart of transmission is necessary
         super(base);
         createChannel();
+        this.addr = addr;
     }
 
     public void createChannel() {
@@ -41,8 +43,10 @@ public class StopNotificationChannel extends ContextWrapper {
     }
 
     public Notification.Builder getAndroidChannelNotification(String title, String body) {
-        Intent myIntent = new Intent(this, StopNotificationChannel.class);
+        Intent myIntent = new Intent(this, StartTransmissionActivity.class); // reopen start transmission activity on push
+        myIntent.putExtra("addr", addr);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, myIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
 
         return new Notification.Builder(getApplicationContext(), "STOP_CHANNEL_ID")
                 .setContentTitle(title)
@@ -50,8 +54,7 @@ public class StopNotificationChannel extends ContextWrapper {
                 .setSmallIcon(android.R.drawable.ic_menu_camera)
                 .setAutoCancel(true)
                 .setColor(Color.GREEN)
-                .setContentIntent(PendingIntent.getActivity(this, 0, new Intent(), 0))
-                .addAction(android.R.drawable.ic_menu_camera, "ЗАВЕРШИТЬ", pendingIntent); // TODO: set stop transmission
-
+                .setContentIntent(pendingIntent)
+                .setProgress(100, 0, true);
     }
 }
