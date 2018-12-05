@@ -33,6 +33,7 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -46,6 +47,10 @@ import java.net.UnknownHostException;
 public class MainActivity extends Activity {
 
     private String ip;
+    private boolean check = false;
+    private DatagramSocket server;
+    private InetAddress ia;
+    private int port;
     private TextView ipTextView;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,9 +63,6 @@ public class MainActivity extends Activity {
     public void toManualActivity(View view) {
         startActivity(new Intent(MainActivity.this, ManualActivity.class));
     }
-    public void onYes(){
-
-    }
     public void toAuthorsActivity(View view) {
         startActivity(new Intent(MainActivity.this, AuthorsActivity.class));
     }
@@ -68,36 +70,15 @@ public class MainActivity extends Activity {
         @Override
         protected String doInBackground(Void... params){
             byte[] readBuf = new byte[1024];
-            byte[] sendBuf;
             String mesg = null;
             DatagramPacket recievePacket = new DatagramPacket(readBuf, readBuf.length);
-            DatagramSocket server = null;
             try {
-                server = new DatagramSocket(11111);
+                server = new DatagramSocket(11110);
                 Log.i("mesg", "Socket Created");
                 server.receive(recievePacket);
                 mesg = new String(recievePacket.getData());
-                if (mesg == "connect"){
-                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                    builder.setMessage("Принять соединение?")
-                            .setTitle("")
-                            .setPositiveButton("Да", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                }
-                            })
-                            .setNegativeButton("Нет", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                }
-                            });
-                }
-                sendBuf = mesg.getBytes();
-                DatagramPacket sendPacket = new DatagramPacket(sendBuf, sendBuf.length, recievePacket.getAddress(), recievePacket.getPort());
-                server.send(sendPacket);
-                Log.i("mesg", "Message sent " + mesg);
+                ia = recievePacket.getAddress();
+                port = recievePacket.getPort();
             }
             catch (Exception e){
                 Log.i("mesg", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa " + e);
@@ -106,7 +87,43 @@ public class MainActivity extends Activity {
         }
         @Override
         protected void onPostExecute(String result){
+            if (result == "connect"){
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setMessage("Принять соединение?")
+                        .setTitle("")
+                        .setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                try{
+                                    Intent i = new Intent(MainActivity.this, PhoneView.class);
+                                    byte[] sendBuf = "Да".getBytes();
+                                    DatagramPacket sendPacket = new DatagramPacket(sendBuf, sendBuf.length, ia, port);
+                                    server.send(sendPacket);
+                                    server.close();
+                                    startActivity(i);
+                                }
+                                catch (IOException e){
+                                    Log.e("emesg","Ошибка при отправлении");
+                                }
+                            }
+                        })
+                        .setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                try{
+                                    byte[] sendBuf = "Нет".getBytes();
+                                    DatagramPacket sendPacket = new DatagramPacket(sendBuf, sendBuf.length, ia, port);
+                                    server.send(sendPacket);
+                                    server.close();
+                                }
+                                catch (IOException e){
+                                    Log.e("emesg","Ошибка при отправлении");
+                                }
 
+                            }
+                        });
+                builder.create();
+            }
         }
     }
     class IpTask extends AsyncTask<Void, Void, String>{

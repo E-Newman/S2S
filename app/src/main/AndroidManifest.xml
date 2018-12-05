@@ -49,7 +49,8 @@
         </activity>
         <activity android:name=".DetailsActivity" />
         <activity android:name=".BrowseErrorActivity" />
-        <activity android:name=".AuthorsActivity"></activity>
+        <activity android:name=".AuthorsActivity" />
+        <activity android:name=".PhoneView"></activity>
     </application>
 
 </manifest>
