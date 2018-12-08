@@ -38,7 +38,7 @@ public class StartTransmissionActivity extends AppCompatActivity {
             textStatus.setText(tvc.tvStatus);
         }
 
-        //if (tvc.tvStatus == "Соединение установлено") { // раскомментить, когда будем перекидываться сообщениями
+        if (tvc.tvStatus == "Соединение установлено") { // раскомментить, когда будем перекидываться сообщениями
             textStatus.setVisibility(View.INVISIBLE);
             StopNotificationChannel nc = new StopNotificationChannel(this, addr);
 
@@ -63,8 +63,8 @@ public class StartTransmissionActivity extends AppCompatActivity {
             /* start transmission */
             DataTransfer dt = new DataTransfer((Button) findViewById(R.id.buttonStartTransmission));
             dt.execute(addr);
-        } //else textStatus.setText(tvc.tvStatus);
-    //}
+        } else textStatus.setText(tvc.tvStatus);
+    }
 
     public void goBack(View view) { // TODO: check the mode and load the proper screen
         Intent intent = new Intent(StartTransmissionActivity.this, EnterIP_Activity.class);
