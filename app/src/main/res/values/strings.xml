@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">Smart 2 Smart</string>
+    <string name="app_name">Smart2Smart</string>
+    <string name="authors_list">Павловский Владислав: менеджмент, разработка приложения для Smart TV\n\nПаренченков Евгений: разработка приложения для смартфона\n\nТришкин Антон: тестирование\n\nСоголовский Александр: тестирование, документация\n\nАлексеев Владислав: дизайн</string>
 </resources>
