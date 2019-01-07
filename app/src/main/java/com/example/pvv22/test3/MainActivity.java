@@ -16,7 +16,6 @@ package com.example.pvv22.test3;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -46,8 +45,6 @@ import java.net.UnknownHostException;
  */
 public class MainActivity extends Activity {
 
-    private String ip;
-    private boolean check = false;
     private DatagramSocket server;
     private InetAddress ia;
     private int port;
@@ -59,6 +56,8 @@ public class MainActivity extends Activity {
         ipTextView = (TextView) findViewById(R.id.ipTextView);
         IpTask task1 = new IpTask();
         task1.execute();
+        NetTask nt = new NetTask();
+        nt.execute();
     }
     public void toManualActivity(View view) {
         startActivity(new Intent(MainActivity.this, ManualActivity.class));
@@ -66,7 +65,7 @@ public class MainActivity extends Activity {
     public void toAuthorsActivity(View view) {
         startActivity(new Intent(MainActivity.this, AuthorsActivity.class));
     }
-    class NetTask extends AsyncTask<Void, Void, String>{
+    private class NetTask extends AsyncTask<Void, Void, String>{
         @Override
         protected String doInBackground(Void... params){
             byte[] readBuf = new byte[1024];
@@ -87,7 +86,7 @@ public class MainActivity extends Activity {
         }
         @Override
         protected void onPostExecute(String result){
-            if (result == "Сonnect"){
+            if (result.contains("Сonnect")){
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setMessage("Принять соединение?")
                         .setTitle("")

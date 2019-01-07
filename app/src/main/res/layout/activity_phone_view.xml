@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PhoneView"
-    android:background="@drawable/grey_background">
+    tools:context=".PhoneView">
 
     <ImageView
         android:id="@+id/phoneImage"
@@ -21,16 +20,13 @@
 
     <Button
         android:id="@+id/button2"
-        android:layout_width="186dp"
-        android:layout_height="53dp"
-        android:layout_marginEnd="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="45dp"
-        android:background="@drawable/button"
+        android:layout_marginEnd="8dp"
+        android:text="Остановить трансляцию"
         android:onClick="onBtnClick"
-        android:text="Остановить\n трансляцию"
-        android:textColor="@android:color/black"
-        android:textSize="18sp"
         app:layout_constraintEnd_toStartOf="@+id/phoneImage"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
