@@ -35,8 +35,7 @@ class TVStatusChecker extends AsyncTask<String, Void, Integer> {
         }
 
         try {
-            sock = new DatagramSocket();
-            sock.setSoTimeout(3000); // wait for 3 seconds
+            sock = new DatagramSocket(11109);
         } catch (Exception e) {
             Log.e("FATAL","Failed to create the socket");
             tvStatus = "Не удалось создать сокет";
@@ -46,6 +45,7 @@ class TVStatusChecker extends AsyncTask<String, Void, Integer> {
         DatagramPacket dp = new DatagramPacket(message.getBytes(), message.getBytes().length,  ia, 11110);
         try {
             sock.send(dp);
+            sock.setSoTimeout(3000); // wait for 3 seconds
         } catch (Exception e) {
             Log.e("FATAL","Failed to send datagram");
             tvStatus = "Не удалось отправить запрос на подключение";
@@ -58,7 +58,7 @@ class TVStatusChecker extends AsyncTask<String, Void, Integer> {
             Log.i("ZHDEM", "1");
             sock.receive(ap);
             Log.i("PRISHLO", "1");
-            if (ap.getData().toString() == "No") {
+            if (ap.getData().toString().contains("No")) {
                 Log.i("NOPE", "Nope");
                 try {
                     if (!sock.isClosed()) {
@@ -71,7 +71,7 @@ class TVStatusChecker extends AsyncTask<String, Void, Integer> {
                     tvStatus = "Ошибка при закрытии сокета";
                     return -5;
                 } // process?
-            } else if(ap.getData().toString() != "Yes") {
+            } else if(ap.getData().toString().contains("Yes")) {
                 Log.i("NOPE", "We got smth wrong");
                 try {
                     if (!sock.isClosed()) {
@@ -137,14 +137,14 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
         }
 
         try {
-            sock = new DatagramSocket();
+            sock = new DatagramSocket(11112);
         } catch (Exception e) {
             Log.e("FATAL","Failed to create the socket");
             return -2;
         }
 
         try {
-            lsock = new DatagramSocket(11112);
+            lsock = new DatagramSocket(11113);
         } catch (Exception e) {
             Log.e("FATAL", "Failed to create the listening socket");
             return -2;
