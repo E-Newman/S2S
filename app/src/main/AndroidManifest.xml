@@ -22,10 +22,12 @@
         <activity android:name=".StartTransmissionActivity" android:screenOrientation="portrait" />
         <activity android:name=".AuthorsActivity" android:screenOrientation="portrait" />
         <activity android:name=".ManualActivity" android:screenOrientation="portrait"></activity>
+        <service android:name="com.petrsu.se.s2s.ScreenRecorder"></service>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 </manifest>

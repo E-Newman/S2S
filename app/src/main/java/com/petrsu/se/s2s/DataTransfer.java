@@ -6,9 +6,12 @@ import android.util.Log;
 import android.widget.Button;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.nio.file.Files;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -111,12 +114,12 @@ class TVStatusChecker extends AsyncTask<String, Void, Integer> {
 }
 
 class DataTransfer extends AsyncTask<String, Void, Integer> {
-    private Button findButton;
     byte[] stopPack;
     public static boolean timerRunning = false;
+    private ScreenRecorder screenRecorder;
 
-    public DataTransfer(Button findButton) {
-        this.findButton = findButton;
+    public DataTransfer(ScreenRecorder screenRecorder) {
+        this.screenRecorder = screenRecorder;
     }
 
     @Override
@@ -155,7 +158,7 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
 
         stopPack = new byte[9];
 
-        sendTimer.schedule(sendTask, 0, 1000); // send once a second
+        sendTimer.schedule(sendTask, 0, 5000); // TODO: find optimal vid length
 
         Log.i("START", "Data transfer start");
         while (timerRunning);
@@ -179,8 +182,9 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
     private class sendTask extends TimerTask {
         DatagramSocket sock, lsock;
         InetAddress ia;
-        Bitmap screenToSend;
         Timer sendTimer;
+
+        File sendFile = new File("/data/user/0/com.petrsu.se.s2s/record.mp4");
 
         public sendTask(DatagramSocket sock, DatagramSocket lsock, InetAddress ia, Timer sendTimer) {
             this.sock = sock;
@@ -204,22 +208,19 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
                 return;
             }*/
 
-            screenToSend = ScreenRecorder.takeScreenshotOfRootView(findButton); // take the ss
-
-            /* convert & send the ss */
-            ByteArrayOutputStream screenStream = new ByteArrayOutputStream();
-            screenToSend.compress(Bitmap.CompressFormat.PNG, 50, screenStream);
-            byte [] compScreen = screenStream.toByteArray();
-            screenToSend.recycle();
-
-            DatagramPacket dp = new DatagramPacket(compScreen, compScreen.length, ia, 11111);
+            if (screenRecorder.isRunning()) screenRecorder.stopRecord();
+            Log.d("RECORDED", "Yeee");
             try {
-                sock.send(dp);
+                byte[] videoBytes = new byte[(int) sendFile.length()];
+                if (sendFile.exists()) {
+                    new FileInputStream(sendFile).read(videoBytes);
+                    DatagramPacket videoPack = new DatagramPacket(videoBytes, videoBytes.length);
+                    sock.send(videoPack);
+                } else Log.e("FILE", "Not found");
             } catch (Exception e) {
-                Log.e("FATAL", "Failed to send datagram");
-                sendTimer.cancel();
-                return;
+                e.printStackTrace();
             }
+            if (!screenRecorder.isRunning()) screenRecorder.startRecord();
         }
     }
 }
