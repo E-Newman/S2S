@@ -76,6 +76,9 @@ public class StartTransmissionActivity extends AppCompatActivity {
             }
         }
 
+
+        Intent captureIntent = mediaProjectionManager.createScreenCaptureIntent();
+        startActivityForResult(captureIntent, RECORD_REQUEST_CODE);
         Intent recIntent = new Intent(this, ScreenRecorder.class);
         bindService(recIntent, connection, BIND_AUTO_CREATE);
     }
@@ -88,9 +91,13 @@ public class StartTransmissionActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == RECORD_REQUEST_CODE && resultCode == RESULT_OK) {
-            mediaProjection = mediaProjectionManager.getMediaProjection(resultCode, data);
-            screenRecorder.setMediaProject(mediaProjection);
+        if (requestCode == RECORD_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                mediaProjection = mediaProjectionManager.getMediaProjection(resultCode, data);
+                screenRecorder.setMediaProject(mediaProjection);
+            } else {
+                Log.e("RESULT CODE", Integer.toString(resultCode));
+            }
         }
     }
 
@@ -131,12 +138,12 @@ public class StartTransmissionActivity extends AppCompatActivity {
             startActivity(startMain);*/
 
             /* start transmission */
-            if(screenRecorder.isRunning()) {
+            /*if(screenRecorder.isRunning()) {
                 screenRecorder.stopRecord();
             } else {
                 Intent captureIntent = mediaProjectionManager.createScreenCaptureIntent();
                 startActivityForResult(captureIntent, RECORD_REQUEST_CODE);
-            }
+            }*/
 
             DataTransfer dt = new DataTransfer(screenRecorder);
             dt.execute(addr);
