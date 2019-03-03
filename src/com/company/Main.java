@@ -53,21 +53,31 @@ public class Main {
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
-                ByteArrayInputStream imgStream = new ByteArrayInputStream(receivePacket.getData());
-                BufferedImage img = null;
+                int piecesNumber = receivePacket.getData()[3];
+                //ByteArrayInputStream imgStream = new ByteArrayInputStream(receivePacket.getData());
+                //BufferedImage img = null;
+                File videoFile = null;
                 try {
-                    img = ImageIO.read(imgStream);
-                    System.out.println("Image");
+                    videoFile = new File("C:/Users/EP/record.mp4");
+                    System.out.println("Video");
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
-                File imgFile = new File("C:/ourimg.jpg");
+                FileOutputStream fos = null;
                 try {
-                    ImageIO.write(img, "jpg", imgFile);
-                    System.out.println("Image write");
-                }
-                catch (Exception e) {
+                    fos = new FileOutputStream(videoFile);
+                    System.out.println("Video write");
+                } catch (Exception e) {
                     System.out.println(e.getMessage());
+                }
+                for (int i = 0; i < piecesNumber; i++) {
+                    try {
+                        imgSocket.receive(receivePacket);
+                        fos.write(receivePacket.getData());
+                    }
+                        catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    }
                 }
             }
         }
