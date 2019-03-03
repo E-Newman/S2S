@@ -63,6 +63,11 @@ public class StartTransmissionActivity extends AppCompatActivity {
         File outFile = new File("/data/user/0/com.petrsu.se.s2s/record.mp4");
 
         Log.d("FILE", outFile.getAbsolutePath());
+        if (outFile.exists()) {
+            if (outFile.delete()) {
+                Log.d("RECORD", "Deleted in STA");
+            }  else Log.e("RECORD", "File delete issues in STA");
+        }
         if (!outFile.exists()) {
             try {
                 /*if (outFile.mkdirs()) {
@@ -95,6 +100,7 @@ public class StartTransmissionActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 mediaProjection = mediaProjectionManager.getMediaProjection(resultCode, data);
                 screenRecorder.setMediaProject(mediaProjection);
+                screenRecorder.startRecord();
             } else {
                 Log.e("RESULT CODE", Integer.toString(resultCode));
             }

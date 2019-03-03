@@ -117,6 +117,7 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
     byte[] stopPack;
     public static boolean timerRunning = false;
     private ScreenRecorder screenRecorder;
+    private InetAddress ia;
 
     public DataTransfer(ScreenRecorder screenRecorder) {
         this.screenRecorder = screenRecorder;
@@ -124,7 +125,6 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
 
     @Override
     protected Integer doInBackground(String... args){
-        InetAddress ia;
         DatagramSocket sock = null, lsock = null;
         String addria = "";
 
@@ -158,7 +158,7 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
 
         stopPack = new byte[9];
 
-        sendTimer.schedule(sendTask, 0, 5000); // TODO: find optimal vid length
+        sendTimer.schedule(sendTask, 0, 1000); // TODO: find optimal vid length
 
         Log.i("START", "Data transfer start");
         while (timerRunning);
@@ -208,19 +208,20 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
                 return;
             }*/
 
-            if (screenRecorder.isRunning()) screenRecorder.stopRecord();
+            //if (screenRecorder.isRunning()) screenRecorder.stopRecord();
             Log.d("RECORDED", "Yeee");
             try {
                 byte[] videoBytes = new byte[(int) sendFile.length()];
                 if (sendFile.exists()) {
                     new FileInputStream(sendFile).read(videoBytes);
-                    DatagramPacket videoPack = new DatagramPacket(videoBytes, videoBytes.length);
+                    DatagramPacket videoPack = new DatagramPacket(videoBytes, videoBytes.length, ia, 11111);
                     sock.send(videoPack);
+                    Log.d("RECORDED", "Sent " + videoBytes.length + " bytes");
                 } else Log.e("FILE", "Not found");
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if (!screenRecorder.isRunning()) screenRecorder.startRecord();
+            //if (!screenRecorder.isRunning()) screenRecorder.startRecord();
         }
     }
 }
