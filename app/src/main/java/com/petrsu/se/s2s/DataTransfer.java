@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -196,6 +197,14 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
 
         @Override
         public void run() {
+            FileInputStream fis = null;
+            try
+            {
+                fis = new FileInputStream(sendFile);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
             /*try {
                 lsock.receive(new DatagramPacket(stopPack, stopPack.length));
                 if (stopPack.toString() == "Interrupt") {
@@ -211,11 +220,16 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
             //if (screenRecorder.isRunning()) screenRecorder.stopRecord();
             Log.d("RECORDED", "Yeee");
             try {
-                byte[] videoBytes = new byte[(int) sendFile.length()];
+                byte[] videoBytes = new byte[65000];
                 if (sendFile.exists()) {
-                    new FileInputStream(sendFile).read(videoBytes);
-                    DatagramPacket videoPack = new DatagramPacket(videoBytes, videoBytes.length, ia, 11111);
-                    sock.send(videoPack);
+                    int piecesNumber = (int)(sendFile.length() / 65000) + 1;
+                    byte[] byteNum = ByteBuffer.allocate(4).putInt(piecesNumber).array();
+                    sock.send(new DatagramPacket(byteNum, byteNum.length, ia, 11111));
+                    for (int i = 0; i < piecesNumber; i++) {
+                        fis.read(videoBytes);
+                        DatagramPacket videoPack = new DatagramPacket(videoBytes, 65000, ia, 11111);
+                        sock.send(videoPack);
+                    }
                     Log.d("RECORDED", "Sent " + videoBytes.length + " bytes");
                 } else Log.e("FILE", "Not found");
             } catch (Exception e) {
