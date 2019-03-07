@@ -227,6 +227,11 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
                     sock.send(new DatagramPacket(byteNum, byteNum.length, ia, 11111));
                     for (int i = 0; i < piecesNumber; i++) {
                         fis.read(videoBytes);
+                        long checksum = 0;
+                        for (int j = 0; j < videoBytes.length; j++) {
+                            checksum += videoBytes[j];
+                        }
+                        Log.d("CHECKSUM", Long.toString(checksum));
                         DatagramPacket videoPack = new DatagramPacket(videoBytes, 65000, ia, 11111);
                         sock.send(videoPack);
                     }

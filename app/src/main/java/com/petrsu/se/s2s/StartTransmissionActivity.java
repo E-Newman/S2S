@@ -100,7 +100,7 @@ public class StartTransmissionActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 mediaProjection = mediaProjectionManager.getMediaProjection(resultCode, data);
                 screenRecorder.setMediaProject(mediaProjection);
-                screenRecorder.startRecord();
+                screenRecorder.startRecord(); // TODO: перенести на кнопку?
             } else {
                 Log.e("RESULT CODE", Integer.toString(resultCode));
             }
@@ -151,6 +151,7 @@ public class StartTransmissionActivity extends AppCompatActivity {
                 startActivityForResult(captureIntent, RECORD_REQUEST_CODE);
             }*/
 
+            screenRecorder.stopRecord(); // TODO: чисто для теста
             DataTransfer dt = new DataTransfer(screenRecorder);
             dt.execute(addr);
         } else textStatus.setText(tvc.tvStatus);
