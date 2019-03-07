@@ -19,7 +19,7 @@ public class Main {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        byte[] receiveData = new byte[65536];
+        byte[] receiveData = new byte[65000];
         byte[] sendData = new byte[1024];
         while(true) {
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
@@ -73,6 +73,13 @@ public class Main {
                 for (int i = 0; i < piecesNumber; i++) {
                     try {
                         imgSocket.receive(receivePacket);
+                        //byte[] videoBytes = new byte[65000];
+                        byte[] videoBytes = receivePacket.getData();
+                        long checksum = 0;
+                        for (int j = 0; j < videoBytes.length; j++) {
+                            checksum += videoBytes[j];
+                        }
+                        System.out.println(Long.toString(checksum));
                         fos.write(receivePacket.getData());
                     }
                         catch (Exception e) {
