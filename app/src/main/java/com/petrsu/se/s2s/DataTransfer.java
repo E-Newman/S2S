@@ -1,17 +1,14 @@
 package com.petrsu.se.s2s;
 
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Button;
-
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.nio.file.Files;
+import java.nio.ByteBuffer;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -73,7 +70,7 @@ class TVStatusChecker extends AsyncTask<String, Void, Integer> {
                     Log.e("FATAL","Socket wasn't closed");
                     tvStatus = "Ошибка при закрытии сокета";
                     return -5;
-                } // process?
+                }
             } else if(ap.getData().toString().contains("Yes")) {
                 Log.i("NOPE", "We got smth wrong");
                 try {
@@ -93,8 +90,6 @@ class TVStatusChecker extends AsyncTask<String, Void, Integer> {
             tvStatus = "Не удалось получить ответ от телевизора";
             return -6;
         }
-
-        /* image getting */
 
         try {
             if (!sock.isClosed()) sock.close();
@@ -117,6 +112,7 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
     byte[] stopPack;
     public static boolean timerRunning = false;
     private ScreenRecorder screenRecorder;
+    private InetAddress ia;
 
     public DataTransfer(ScreenRecorder screenRecorder) {
         this.screenRecorder = screenRecorder;
@@ -124,7 +120,6 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
 
     @Override
     protected Integer doInBackground(String... args){
-        InetAddress ia;
         DatagramSocket sock = null, lsock = null;
         String addria = "";
 
@@ -158,7 +153,13 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
 
         stopPack = new byte[9];
 
-        sendTimer.schedule(sendTask, 0, 10000); // TODO: find optimal vid length
+        try {
+            Thread.sleep(5000); // freeze to write some video
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        sendTimer.schedule(sendTask, 0, 5000); // TODO: find optimal vid length
 
         Log.i("START", "Data transfer start");
         while (timerRunning);
@@ -196,6 +197,14 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
 
         @Override
         public void run() {
+            FileInputStream fis = null;
+            try
+            {
+                fis = new FileInputStream(sendFile);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
             /*try {
                 lsock.receive(new DatagramPacket(stopPack, stopPack.length));
                 if (stopPack.toString() == "Interrupt") {
@@ -211,11 +220,29 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
             if (screenRecorder.isRunning()) screenRecorder.stopRecord();
             Log.d("RECORDED", "Yeee");
             try {
-                byte[] videoBytes = new byte[(int) sendFile.length()];
+                byte[] videoBytes = new byte[65000];
                 if (sendFile.exists()) {
-                    new FileInputStream(sendFile).read(videoBytes);
-                    //DatagramPacket videoPack = new DatagramPacket(videoBytes, videoBytes.length);
-                    //sock.send(videoPack);
+                    int piecesNumber = (int)(sendFile.length() / 65000) + 1;
+                    byte[] byteNum = ByteBuffer.allocate(4).putInt(piecesNumber).array();
+                    sock.send(new DatagramPacket(byteNum, byteNum.length, ia, 11111));
+                    for (int i = 0; i < piecesNumber; i++) {
+                        fis.read(videoBytes);
+                        long checksum = 0;
+                        for (int j = 0; j < videoBytes.length; j++) {
+                            checksum += videoBytes[j];
+                        }
+                        Log.d("CHECKSUM", Long.toString(checksum));
+                        DatagramPacket videoPack = new DatagramPacket(videoBytes, 65000, ia, 11111);
+                        sock.send(videoPack);
+                    }
+                    /*try {
+                        PrintWriter flusher = new PrintWriter(sendFile); // flush file for new part of vid
+                        flusher.write("");
+                        flusher.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }*/
+                    Log.d("RECORDED", "Sent " + videoBytes.length + " bytes");
                 } else Log.e("FILE", "Not found");
             } catch (Exception e) {
                 e.printStackTrace();

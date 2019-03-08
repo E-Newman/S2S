@@ -7,9 +7,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
-import android.os.Environment;
 import android.os.IBinder;
-import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -63,11 +61,13 @@ public class StartTransmissionActivity extends AppCompatActivity {
         File outFile = new File("/data/user/0/com.petrsu.se.s2s/record.mp4");
 
         Log.d("FILE", outFile.getAbsolutePath());
+        if (outFile.exists()) {
+            if (outFile.delete()) {
+                Log.d("RECORD", "Deleted in STA");
+            }  else Log.e("RECORD", "File delete issues in STA");
+        }
         if (!outFile.exists()) {
             try {
-                /*if (outFile.mkdirs()) {
-                    Log.d("FILE", "Created subdir");
-                } else Log.e("RECORD", "Subdir create issues in STA");*/
                 if (outFile.createNewFile()) {
                     Log.d("RECORD", "Created in STA");
                 } else Log.e("RECORD", "File create issues in STA");
@@ -95,7 +95,7 @@ public class StartTransmissionActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 mediaProjection = mediaProjectionManager.getMediaProjection(resultCode, data);
                 screenRecorder.setMediaProject(mediaProjection);
-                screenRecorder.startRecord();
+                //screenRecorder.startRecord(); // TODO: перенести на кнопку?
             } else {
                 Log.e("RESULT CODE", Integer.toString(resultCode));
             }
@@ -146,6 +146,8 @@ public class StartTransmissionActivity extends AppCompatActivity {
                 startActivityForResult(captureIntent, RECORD_REQUEST_CODE);
             }*/
 
+            //screenRecorder.stopRecord(); // TODO: чисто для теста
+            screenRecorder.startRecord();
             DataTransfer dt = new DataTransfer(screenRecorder);
             dt.execute(addr);
         } else textStatus.setText(tvc.tvStatus);
