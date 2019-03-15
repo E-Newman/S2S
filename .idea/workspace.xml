@@ -83,8 +83,8 @@
       <file leaf-file-name="DataTransfer.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/petrsu/se/s2s/DataTransfer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="213">
-              <caret line="221" column="64" selection-start-line="221" selection-start-column="64" selection-end-line="221" selection-end-column="64" />
+            <state relative-caret-position="18">
+              <caret line="228" column="90" lean-forward="true" selection-start-line="228" selection-start-column="90" selection-end-line="228" selection-end-column="90" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#3756#3757#0" expanded="true" />
@@ -2262,7 +2262,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-8" />
     <option name="y" value="-8" />
     <option name="width" value="1382" />
@@ -2575,7 +2575,7 @@
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Version Control" order="10" show_stripe_button="false" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.32843137" />
-      <window_info active="true" anchor="bottom" id="Logcat" order="9" visible="true" weight="0.41993463" />
+      <window_info active="true" anchor="bottom" id="Logcat" order="9" visible="true" weight="0.9346405" />
       <window_info id="Captures" order="5" weight="0.32980332" />
       <window_info id="Capture Tool" order="3" />
       <window_info id="Designer" order="4" />
@@ -2647,7 +2647,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/petrsu/se/s2s/DataTransfer.java</url>
-          <line>217</line>
+          <line>220</line>
           <properties />
           <option name="timeStamp" value="94" />
         </line-breakpoint>
@@ -2991,8 +2991,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/petrsu/se/s2s/DataTransfer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="213">
-          <caret line="221" column="64" selection-start-line="221" selection-start-column="64" selection-end-line="221" selection-end-column="64" />
+        <state relative-caret-position="18">
+          <caret line="228" column="90" lean-forward="true" selection-start-line="228" selection-start-column="90" selection-end-line="228" selection-end-column="90" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#3756#3757#0" expanded="true" />

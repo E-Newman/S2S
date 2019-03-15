@@ -2,6 +2,9 @@ package com.petrsu.se.s2s;
 
 import android.os.AsyncTask;
 import android.util.Log;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.PrintWriter;
@@ -217,7 +220,12 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
                     if (sendFile.exists()) {
                         int piecesNumber = (int)(sendFile.length() / 65000) + 1;
                         Log.i("FILELEN", Integer.toString(piecesNumber));
-                        byte[] byteNum = ByteBuffer.allocate(4).putInt(piecesNumber).array();
+                        //byte[] byteNum = ByteBuffer.allocate(4).putInt(piecesNumber).array();
+                        ByteArrayOutputStream numAos = new ByteArrayOutputStream();
+                        DataOutputStream numDos = new DataOutputStream(numAos);
+                        numDos.writeInt(piecesNumber);
+                        numDos.close();
+                        byte[] byteNum = numAos.toByteArray();
                         sock.send(new DatagramPacket(byteNum, byteNum.length, ia, 11111));
                         for (int i = 0; i < piecesNumber; i++) {
                             fis.read(videoBytes);
