@@ -9,6 +9,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
+import java.security.spec.ECField;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -159,7 +160,7 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
             e.printStackTrace();
         }
 
-        sendTimer.schedule(sendTask, 0, 5000); // TODO: find optimal vid length
+        sendTimer.schedule(sendTask, 0, 1000); // TODO: find optimal vid length
 
         Log.i("START", "Data transfer start");
         while (timerRunning);
@@ -197,7 +198,18 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
 
         @Override
         public void run() {
-            FileInputStream fis = null;
+            if (sendFile.length() >= 20 * 65000) {
+                screenRecorder.stopRecord();
+                try {
+                    PrintWriter flusher = new PrintWriter(sendFile); // flush file for new part of vid
+                    flusher.write("");
+                    flusher.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                screenRecorder.startRecord();
+            }
+            /*FileInputStream fis = null;
             try
             {
                 fis = new FileInputStream(sendFile);
@@ -217,7 +229,7 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
                 return;
             }*/
 
-            if (screenRecorder.isRunning()) screenRecorder.stopRecord();
+            /*if (screenRecorder.isRunning()) screenRecorder.stopRecord();
             Log.d("RECORDED", "Yeee");
             try {
                 byte[] videoBytes = new byte[65000];
@@ -227,27 +239,32 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
                     sock.send(new DatagramPacket(byteNum, byteNum.length, ia, 11111));
                     for (int i = 0; i < piecesNumber; i++) {
                         fis.read(videoBytes);
-                        long checksum = 0;
+                        /*long checksum = 0;
                         for (int j = 0; j < videoBytes.length; j++) {
                             checksum += videoBytes[j];
                         }
                         Log.d("CHECKSUM", Long.toString(checksum));
                         DatagramPacket videoPack = new DatagramPacket(videoBytes, 65000, ia, 11111);
-                        sock.send(videoPack);
-                    }
-                    /*try {
+                        sock.send(videoPack);*/
+                    /*}
+                    try {
                         PrintWriter flusher = new PrintWriter(sendFile); // flush file for new part of vid
                         flusher.write("");
                         flusher.close();
                     } catch (Exception e) {
                         e.printStackTrace();
-                    }*/
+                    }
+                    try {
+                        fis.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     Log.d("RECORDED", "Sent " + videoBytes.length + " bytes");
                 } else Log.e("FILE", "Not found");
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if (!screenRecorder.isRunning()) screenRecorder.startRecord();
+            if (!screenRecorder.isRunning()) screenRecorder.startRecord();*/
         }
     }
 }
