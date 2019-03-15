@@ -9,7 +9,8 @@
     </shared>
   </component>
   <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_LOG_LEVEL" value="error" />
+    <option name="TOOL_WINDOW_CUSTOM_FILTER" value="FILELEN" />
+    <option name="TOOL_WINDOW_LOG_LEVEL" value="info" />
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="No Filters" />
   </component>
   <component name="CMakeSettings">
@@ -53,11 +54,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ScreenRecorder.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ScreenRecorder.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/petrsu/se/s2s/ScreenRecorder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="200">
-              <caret line="82" column="10" selection-start-line="82" selection-start-column="10" selection-end-line="82" selection-end-column="10" />
+            <state relative-caret-position="421">
+              <caret line="80" column="8" selection-start-line="80" selection-start-column="8" selection-end-line="80" selection-end-column="8" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#3260#3261#0" expanded="true" />
@@ -70,7 +71,7 @@
       <file leaf-file-name="StartTransmissionActivity.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/petrsu/se/s2s/StartTransmissionActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1192">
+            <state relative-caret-position="-70">
               <caret line="99" column="67" selection-start-line="99" selection-start-column="67" selection-end-line="99" selection-end-column="67" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -79,16 +80,25 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DataTransfer.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="DataTransfer.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/petrsu/se/s2s/DataTransfer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="117">
-              <caret line="203" column="44" selection-start-line="203" selection-start-column="44" selection-end-line="203" selection-end-column="44" />
+            <state relative-caret-position="213">
+              <caret line="221" column="64" selection-start-line="221" selection-start-column="64" selection-end-line="221" selection-end-column="64" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#3756#3757#0" expanded="true" />
                 <element signature="e#3808#3809#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FileInputStream.class" pinned="false" current-in-tab="false">
+        <entry file="jar://C:/AndroidSDK/platforms/android-26/android.jar!/java/io/FileInputStream.class">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="102">
+              <caret line="26" column="50" selection-start-line="26" selection-start-column="50" selection-end-line="26" selection-end-column="50" />
             </state>
           </provider>
         </entry>
@@ -2247,8 +2257,8 @@
         <option value="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/petrsu/se/s2s/EnterIP_Activity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/petrsu/se/s2s/StartTransmissionActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/petrsu/se/s2s/DataTransfer.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/petrsu/se/s2s/ScreenRecorder.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/petrsu/se/s2s/DataTransfer.java" />
       </list>
     </option>
   </component>
@@ -2554,7 +2564,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="Android Profiler" order="7" weight="0.32843137" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32843137" />
@@ -2638,22 +2647,15 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/petrsu/se/s2s/DataTransfer.java</url>
-          <line>203</line>
+          <line>217</line>
           <properties />
-          <option name="timeStamp" value="92" />
+          <option name="timeStamp" value="94" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="93" />
+      <option name="time" value="95" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/app/build/generated/source/buildConfig/debug/com/petrsu/se/s2s/BuildConfig.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="5" column="19" selection-start-line="5" selection-start-column="19" selection-end-line="5" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/petrsu/se/s2s/ConnectModeActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -2960,7 +2962,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/petrsu/se/s2s/StartTransmissionActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1192">
+        <state relative-caret-position="-70">
           <caret line="99" column="67" selection-start-line="99" selection-start-column="67" selection-end-line="99" selection-end-column="67" />
           <folding>
             <element signature="imports" expanded="true" />
@@ -2968,26 +2970,33 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/petrsu/se/s2s/DataTransfer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="117">
-          <caret line="203" column="44" selection-start-line="203" selection-start-column="44" selection-end-line="203" selection-end-column="44" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#3756#3757#0" expanded="true" />
-            <element signature="e#3808#3809#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/petrsu/se/s2s/ScreenRecorder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="200">
-          <caret line="82" column="10" selection-start-line="82" selection-start-column="10" selection-end-line="82" selection-end-column="10" />
+        <state relative-caret-position="421">
+          <caret line="80" column="8" selection-start-line="80" selection-start-column="8" selection-end-line="80" selection-end-column="8" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#3260#3261#0" expanded="true" />
             <element signature="e#3310#3311#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/AndroidSDK/platforms/android-26/android.jar!/java/io/FileInputStream.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="26" column="50" selection-start-line="26" selection-start-column="50" selection-end-line="26" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/petrsu/se/s2s/DataTransfer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="213">
+          <caret line="221" column="64" selection-start-line="221" selection-start-column="64" selection-end-line="221" selection-end-column="64" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#3756#3757#0" expanded="true" />
+            <element signature="e#3808#3809#0" expanded="true" />
           </folding>
         </state>
       </provider>

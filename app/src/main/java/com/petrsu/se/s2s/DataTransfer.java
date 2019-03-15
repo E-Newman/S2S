@@ -185,6 +185,7 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
         DatagramSocket sock, lsock;
         InetAddress ia;
         Timer sendTimer;
+        int sentFifth = 0;
 
         File sendFile = new File("/data/user/0/com.petrsu.se.s2s/record.mp4");
 
@@ -202,22 +203,44 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
             Log.i("FILELEN", Long.toString(len));
             if (len >= 650000) {
                 screenRecorder.stopRecord();
-               /* try {
-                    PrintWriter flusher = new PrintWriter(sendFile); // flush file for new part of vid
-                    flusher.write("");
-                    flusher.close();
+                FileInputStream fis = null;
+                try
+                {
+                    fis = new FileInputStream(sendFile);
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+                Log.d("RECORDED", "Yeee");
+                try {
+                    byte[] videoBytes = new byte[65000];
+                    if (sendFile.exists()) {
+                        int piecesNumber = (int)(sendFile.length() / 65000) + 1;
+                        Log.i("FILELEN", Integer.toString(piecesNumber));
+                        byte[] byteNum = ByteBuffer.allocate(4).putInt(piecesNumber).array();
+                        sock.send(new DatagramPacket(byteNum, byteNum.length, ia, 11111));
+                        for (int i = 0; i < piecesNumber; i++) {
+                            fis.read(videoBytes);
+                            sock.send(new DatagramPacket(videoBytes, videoBytes.length, ia, 11111));
+                        }
+                        try {
+                            fis.close();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        Log.d("FILELEN", "Sent " + videoBytes.length + " bytes");
+                    } else Log.e("FILE", "Not found");
                 } catch (Exception e) {
                     e.printStackTrace();
-                }*/
-                screenRecorder.startRecord();
-            }
-            /*FileInputStream fis = null;
-            try
-            {
-                fis = new FileInputStream(sendFile);
-            }
-            catch (Exception e) {
-                e.printStackTrace();
+                }
+                if (sentFifth != 5) {
+                    screenRecorder.startRecord();
+                    sentFifth++;
+                } else {
+                    sendTimer.cancel();
+                    Log.i("FILELEN", "finish");
+                }
+
             }
             /*try {
                 lsock.receive(new DatagramPacket(stopPack, stopPack.length));
@@ -230,43 +253,6 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
                 sendTimer.cancel();
                 return;
             }*/
-
-            /*if (screenRecorder.isRunning()) screenRecorder.stopRecord();
-            Log.d("RECORDED", "Yeee");
-            try {
-                byte[] videoBytes = new byte[65000];
-                if (sendFile.exists()) {
-                    int piecesNumber = (int)(sendFile.length() / 65000) + 1;
-                    byte[] byteNum = ByteBuffer.allocate(4).putInt(piecesNumber).array();
-                    sock.send(new DatagramPacket(byteNum, byteNum.length, ia, 11111));
-                    for (int i = 0; i < piecesNumber; i++) {
-                        fis.read(videoBytes);
-                        /*long checksum = 0;
-                        for (int j = 0; j < videoBytes.length; j++) {
-                            checksum += videoBytes[j];
-                        }
-                        Log.d("CHECKSUM", Long.toString(checksum));
-                        DatagramPacket videoPack = new DatagramPacket(videoBytes, 65000, ia, 11111);
-                        sock.send(videoPack);*/
-                    /*}
-                    try {
-                        PrintWriter flusher = new PrintWriter(sendFile); // flush file for new part of vid
-                        flusher.write("");
-                        flusher.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        fis.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    Log.d("RECORDED", "Sent " + videoBytes.length + " bytes");
-                } else Log.e("FILE", "Not found");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            if (!screenRecorder.isRunning()) screenRecorder.startRecord();*/
         }
     }
 }

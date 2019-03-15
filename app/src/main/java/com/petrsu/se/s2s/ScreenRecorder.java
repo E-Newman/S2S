@@ -79,7 +79,7 @@ public class ScreenRecorder extends Service {
         running = false;
         mediaRecorder.stop();
         mediaRecorder.reset();
-        virtualDisplay.release();
+        //virtualDisplay.release();
         //mediaProjection.stop();
 
         return true;
