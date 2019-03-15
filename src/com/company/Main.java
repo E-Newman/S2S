@@ -3,6 +3,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
+import java.nio.ByteBuffer;
 
 public class Main {
 
@@ -53,9 +54,15 @@ public class Main {
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
-                int piecesNumber = receivePacket.getData()[3];
-                //ByteArrayInputStream imgStream = new ByteArrayInputStream(receivePacket.getData());
-                //BufferedImage img = null;
+                //ByteBuffer numBuf = ByteBuffer.wrap(receivePacket.getData());
+                int piecesNumber = -1;
+                ByteArrayInputStream numIs = new ByteArrayInputStream(receivePacket.getData());
+                DataInputStream numDs = new DataInputStream(numIs);
+                try {
+                    piecesNumber = numDs.readInt();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 File videoFile = null;
                 try {
                     videoFile = new File("C:/Users/EP/record.mp4");
@@ -70,6 +77,7 @@ public class Main {
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
+                System.out.println(piecesNumber);
                 for (int i = 0; i < piecesNumber; i++) {
                     try {
                         imgSocket.receive(receivePacket);
