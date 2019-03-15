@@ -198,15 +198,17 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
 
         @Override
         public void run() {
-            if (sendFile.length() >= 20 * 65000) {
+            long len = sendFile.length();
+            Log.i("FILELEN", Long.toString(len));
+            if (len >= 650000) {
                 screenRecorder.stopRecord();
-                try {
+               /* try {
                     PrintWriter flusher = new PrintWriter(sendFile); // flush file for new part of vid
                     flusher.write("");
                     flusher.close();
                 } catch (Exception e) {
                     e.printStackTrace();
-                }
+                }*/
                 screenRecorder.startRecord();
             }
             /*FileInputStream fis = null;

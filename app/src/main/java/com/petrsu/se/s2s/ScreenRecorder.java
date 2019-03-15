@@ -38,7 +38,7 @@ public class ScreenRecorder extends Service {
         serviceThread.start();
         running = false;
         mediaRecorder = new MediaRecorder();
-        mediaRecorder.setOutputFile("/data/user/0/com.petrsu.se.s2s/record.mp4");
+        //mediaRecorder.setOutputFile("/data/user/0/com.petrsu.se.s2s/record.mp4");
     }
 
     @Override
@@ -66,7 +66,7 @@ public class ScreenRecorder extends Service {
         }
 
         initRecorder();
-        if (virtualDisplay == null) createVirtualDisplay();
+        /*if (virtualDisplay == null)*/ createVirtualDisplay();
         mediaRecorder.start();
         running = true;
         return true;
@@ -78,8 +78,8 @@ public class ScreenRecorder extends Service {
         }
         running = false;
         mediaRecorder.stop();
-        //mediaRecorder.reset();
-        //virtualDisplay.release();
+        mediaRecorder.reset();
+        virtualDisplay.release();
         //mediaProjection.stop();
 
         return true;
@@ -93,7 +93,7 @@ public class ScreenRecorder extends Service {
     private void initRecorder() {
         mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        //mediaRecorder.setOutputFile("/data/user/0/com.petrsu.se.s2s/record.mp4");
+        mediaRecorder.setOutputFile("/data/user/0/com.petrsu.se.s2s/record.mp4");
         mediaRecorder.setVideoSize(dWidth, dHeight);
         mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
         mediaRecorder.setVideoEncodingBitRate(3 * 1024 * 1024);
