@@ -11,8 +11,11 @@ import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.security.spec.ECField;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -124,7 +127,7 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
 
     @Override
     protected Integer doInBackground(String... args){
-        DatagramSocket sock = null, lsock = null;
+        Socket sock = null, lsock = null;
         String addria = "";
 
         for (String part : args) {
@@ -139,14 +142,14 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
         }
 
         try {
-            sock = new DatagramSocket(11112);
+            sock = new Socket(addria, 11112);
         } catch (Exception e) {
             Log.e("FATAL","Failed to create the socket");
             return -2;
         }
 
         try {
-            lsock = new DatagramSocket(11113);
+            lsock = new Socket(addria,11113);
         } catch (Exception e) {
             Log.e("FATAL", "Failed to create the listening socket");
             return -2;
@@ -158,7 +161,7 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
         stopPack = new byte[9];
 
         try {
-            Thread.sleep(5000); // freeze to write some video
+            Thread.sleep(3000); // freeze to write some video
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -185,14 +188,15 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
     }
 
     private class sendTask extends TimerTask {
-        DatagramSocket sock, lsock;
+        Socket sock, lsock;
         InetAddress ia;
         Timer sendTimer;
         int sentFifth = 0;
+        byte[] lenByte = new byte[1], videoBytes;
 
         File sendFile = new File("/data/user/0/com.petrsu.se.s2s/record.mp4");
 
-        public sendTask(DatagramSocket sock, DatagramSocket lsock, InetAddress ia, Timer sendTimer) {
+        public sendTask(Socket sock, Socket lsock, InetAddress ia, Timer sendTimer) {
             this.sock = sock;
             this.lsock = lsock;
             this.ia = ia;
@@ -203,8 +207,9 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
         @Override
         public void run() {
             long len = sendFile.length();
-            Log.i("FILELEN", Long.toString(len));
-            if (len >= 650000) {
+            //Log.i("FILELEN", Long.toString(len));
+            if (len >= 0) {
+                videoBytes = new byte[(int)len];
                 screenRecorder.stopRecord();
                 FileInputStream fis = null;
                 try
@@ -216,32 +221,15 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
                 }
                 Log.d("RECORDED", "Yeee");
                 try {
-                    byte[] videoBytes = new byte[65000];
                     if (sendFile.exists()) {
-                        int piecesNumber = (int)(sendFile.length() / 65000) + 1;
-                        Log.i("FILELEN", Integer.toString(piecesNumber));
-                        //byte[] byteNum = ByteBuffer.allocate(4).putInt(piecesNumber).array();
-                        ByteArrayOutputStream numAos = new ByteArrayOutputStream();
-                        DataOutputStream numDos = new DataOutputStream(numAos);
-                        numDos.writeInt(piecesNumber);
-                        numDos.close();
-                        byte[] byteNum = numAos.toByteArray();
-                        sock.send(new DatagramPacket(byteNum, byteNum.length, ia, 11111));
-                        for (int i = 0; i < piecesNumber; i++) {
-                            fis.read(videoBytes);
-                            sock.send(new DatagramPacket(videoBytes, videoBytes.length, ia, 11111));
-                        }
-                        try {
-                            fis.close();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        Log.d("FILELEN", "Sent " + videoBytes.length + " bytes");
+                        fis.read(videoBytes);
+                        sock.getOutputStream().write(videoBytes);
+                        Log.i("FILELEN", "Written " + videoBytes.length + "bytes to " + sock.getInetAddress().getHostAddress());
                     } else Log.e("FILE", "Not found");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if (sentFifth != 5) {
+                if (sentFifth != 0) {
                     screenRecorder.startRecord();
                     sentFifth++;
                 } else {
