@@ -1,18 +1,12 @@
 package com.petrsu.se.s2s;
 
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Button;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.nio.ByteBuffer;
-import java.nio.file.Files;
+import java.net.Socket;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -21,8 +15,8 @@ class TVStatusChecker extends AsyncTask<String, Void, Integer> {
 
     @Override
     protected Integer doInBackground(String... args){
-        InetAddress ia;
-        DatagramSocket sock = null;
+        //InetAddress ia;
+        Socket controlSock = null;
         String message = "Connect";
         String addria = "";
 
@@ -30,43 +24,53 @@ class TVStatusChecker extends AsyncTask<String, Void, Integer> {
             addria += part;
         }
 
-        try {
+        /*try {
             ia = InetAddress.getByName(addria);
         } catch (Exception e) {
             Log.e("FATAL","Failed to resolve IP");
             tvStatus = "Не удалось получить IP-адрес";
             return -1;
-        }
+        }*/
 
         try {
-            sock = new DatagramSocket(11109);
+            controlSock = new Socket(addria,11110);
         } catch (Exception e) {
             Log.e("FATAL","Failed to create the socket");
             tvStatus = "Не удалось создать сокет";
             return -2;
         }
 
-        DatagramPacket dp = new DatagramPacket(message.getBytes(), message.getBytes().length,  ia, 11110);
+        //DatagramPacket dp = new DatagramPacket(message.getBytes(), message.getBytes().length,  ia, 11110);
         try {
-            sock.send(dp);
-            sock.setSoTimeout(3000); // wait for 3 seconds
+            controlSock.getOutputStream().write(message.getBytes());
+            controlSock.setSoTimeout(3000);
         } catch (Exception e) {
             Log.e("FATAL","Failed to send datagram");
             tvStatus = "Не удалось отправить запрос на подключение";
-            return -3;
+            try {
+                if (!controlSock.isClosed()) {
+                    controlSock.close();
+                    tvStatus = "Отказано в соединении";
+                    return -4;
+                }
+            } catch (Exception e1) {
+                Log.e("FATAL","Socket wasn't closed");
+                tvStatus = "Ошибка при закрытии сокета";
+                return -5;
+            }
         }
 
         byte [] ans = new byte[1024];
-        DatagramPacket ap = new DatagramPacket(ans, ans.length);
+        //DatagramPacket ap = new DatagramPacket(ans, ans.length);
         try {
-            Log.i("ZHDEM", "1");
-            sock.receive(ap);
-            Log.i("PRISHLO", "1");
-            if (ap.getData().toString().contains("No")) {
+            controlSock.getInputStream().read(ans);
+            String ansStr = new String(ans);
+            Log.i("FILELEN", ansStr);
+            if (ansStr.contains("No")) {
                 Log.i("NOPE", "Nope");
                 try {
-                    if (!sock.isClosed()) {
-                        sock.close();
+                    if (!controlSock.isClosed()) {
+                        controlSock.close();
                         tvStatus = "Отказано в соединении";
                         return -4;
                     }
@@ -74,12 +78,12 @@ class TVStatusChecker extends AsyncTask<String, Void, Integer> {
                     Log.e("FATAL","Socket wasn't closed");
                     tvStatus = "Ошибка при закрытии сокета";
                     return -5;
-                } // process?
-            } else if(ap.getData().toString().contains("Yes")) {
+                }
+            } else if(!ansStr.contains("Yes")) {
                 Log.i("NOPE", "We got smth wrong");
                 try {
-                    if (!sock.isClosed()) {
-                        sock.close();
+                    if (!controlSock.isClosed()) {
+                        controlSock.close();
                         tvStatus = "Получено неверное сообщение";
                         return -4;
                     }
@@ -93,12 +97,11 @@ class TVStatusChecker extends AsyncTask<String, Void, Integer> {
             Log.e("FATAL","Failed to receive datagram");
             tvStatus = "Не удалось получить ответ от телевизора";
             return -6;
+
         }
 
-        /* image getting */
-
         try {
-            if (!sock.isClosed()) sock.close();
+            if (!controlSock.isClosed()) controlSock.close();
         } catch (Exception e) {
             Log.e("FATAL","Socket wasn't closed");
             tvStatus = "Ошибка при закрытии сокета";
@@ -106,6 +109,7 @@ class TVStatusChecker extends AsyncTask<String, Void, Integer> {
         }
 
         tvStatus = "Соединение установлено";
+        Log.i("FILELEN", "1" + tvStatus);
         return 0;
     }
 
@@ -126,7 +130,7 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
 
     @Override
     protected Integer doInBackground(String... args){
-        DatagramSocket sock = null, lsock = null;
+        Socket sock = null, lsock = null;
         String addria = "";
 
         for (String part : args) {
@@ -141,23 +145,28 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
         }
 
         try {
-            sock = new DatagramSocket(11112);
+            sock = new Socket(addria, 11112);
         } catch (Exception e) {
             Log.e("FATAL","Failed to create the socket");
             return -2;
         }
 
-        try {
-            lsock = new DatagramSocket(11113);
+        /*try {
+            lsock = new Socket(addria,11113);
         } catch (Exception e) {
             Log.e("FATAL", "Failed to create the listening socket");
-            return -2;
-        }
+         */
 
         Timer sendTimer = new Timer();
         TimerTask sendTask = new sendTask(sock, lsock, ia, sendTimer);
 
         stopPack = new byte[9];
+
+        try {
+            Thread.sleep(3000); // freeze to write some video
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         sendTimer.schedule(sendTask, 0, 1000); // TODO: find optimal vid length
 
@@ -181,13 +190,15 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
     }
 
     private class sendTask extends TimerTask {
-        DatagramSocket sock, lsock;
+        Socket sock, lsock;
         InetAddress ia;
         Timer sendTimer;
+        int sentFifth = 0;
+        byte[] lenByte = new byte[1], videoBytes;
 
         File sendFile = new File("/data/user/0/com.petrsu.se.s2s/record.mp4");
 
-        public sendTask(DatagramSocket sock, DatagramSocket lsock, InetAddress ia, Timer sendTimer) {
+        public sendTask(Socket sock, Socket lsock, InetAddress ia, Timer sendTimer) {
             this.sock = sock;
             this.lsock = lsock;
             this.ia = ia;
@@ -197,13 +208,37 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
 
         @Override
         public void run() {
-            FileInputStream fis = null;
-            try
-            {
-                fis = new FileInputStream(sendFile);
-            }
-            catch (Exception e) {
-                e.printStackTrace();
+            long len = sendFile.length();
+            //Log.i("FILELEN", Long.toString(len));
+            if (len >= 0) {
+                videoBytes = new byte[(int)len];
+                screenRecorder.stopRecord();
+                FileInputStream fis = null;
+                try
+                {
+                    fis = new FileInputStream(sendFile);
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+                Log.d("RECORDED", "Yeee");
+                try {
+                    if (sendFile.exists()) {
+                        fis.read(videoBytes);
+                        sock.getOutputStream().write(videoBytes);
+                        Log.i("FILELEN", "Written " + videoBytes.length + "bytes to " + sock.getInetAddress().getHostAddress());
+                    } else Log.e("FILE", "Not found");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (sentFifth != 0) {
+                    screenRecorder.startRecord();
+                    sentFifth++;
+                } else {
+                    sendTimer.cancel();
+                    Log.i("FILELEN", "finish");
+                }
+
             }
             /*try {
                 lsock.receive(new DatagramPacket(stopPack, stopPack.length));
@@ -216,31 +251,6 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
                 sendTimer.cancel();
                 return;
             }*/
-
-            //if (screenRecorder.isRunning()) screenRecorder.stopRecord();
-            Log.d("RECORDED", "Yeee");
-            try {
-                byte[] videoBytes = new byte[65000];
-                if (sendFile.exists()) {
-                    int piecesNumber = (int)(sendFile.length() / 65000) + 1;
-                    byte[] byteNum = ByteBuffer.allocate(4).putInt(piecesNumber).array();
-                    sock.send(new DatagramPacket(byteNum, byteNum.length, ia, 11111));
-                    for (int i = 0; i < piecesNumber; i++) {
-                        fis.read(videoBytes);
-                        long checksum = 0;
-                        for (int j = 0; j < videoBytes.length; j++) {
-                            checksum += videoBytes[j];
-                        }
-                        Log.d("CHECKSUM", Long.toString(checksum));
-                        DatagramPacket videoPack = new DatagramPacket(videoBytes, 65000, ia, 11111);
-                        sock.send(videoPack);
-                    }
-                    Log.d("RECORDED", "Sent " + videoBytes.length + " bytes");
-                } else Log.e("FILE", "Not found");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            //if (!screenRecorder.isRunning()) screenRecorder.startRecord();
         }
     }
 }

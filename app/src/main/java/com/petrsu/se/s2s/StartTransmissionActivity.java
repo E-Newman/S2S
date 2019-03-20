@@ -7,9 +7,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
-import android.os.Environment;
 import android.os.IBinder;
-import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -70,9 +68,6 @@ public class StartTransmissionActivity extends AppCompatActivity {
         }
         if (!outFile.exists()) {
             try {
-                /*if (outFile.mkdirs()) {
-                    Log.d("FILE", "Created subdir");
-                } else Log.e("RECORD", "Subdir create issues in STA");*/
                 if (outFile.createNewFile()) {
                     Log.d("RECORD", "Created in STA");
                 } else Log.e("RECORD", "File create issues in STA");
@@ -100,7 +95,7 @@ public class StartTransmissionActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 mediaProjection = mediaProjectionManager.getMediaProjection(resultCode, data);
                 screenRecorder.setMediaProject(mediaProjection);
-                screenRecorder.startRecord(); // TODO: перенести на кнопку?
+                //screenRecorder.startRecord(); // TODO: перенести на кнопку?
             } else {
                 Log.e("RESULT CODE", Integer.toString(resultCode));
             }
@@ -115,13 +110,23 @@ public class StartTransmissionActivity extends AppCompatActivity {
         tvc.execute(addr);
 
         try {
+            Thread.sleep(2000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (tvc.tvStatus.contains("Соединение установлено")) Log.i("FILELEN", "Ret: " + tvc.tvStatus);
+
+        /*try {
             tvc.get(3500, TimeUnit.MILLISECONDS);
         } // wait for timeout
         catch (Exception e) {
+            e.printStackTrace();
             textStatus.setText(tvc.tvStatus);
-        }
+        }*/
 
-        if (tvc.tvStatus == "Соединение установлено") { // раскомментить, когда будем перекидываться сообщениями
+        if (tvc.tvStatus.contains("Соединение установлено")) { // раскомментить, когда будем перекидываться сообщениями
+            Log.i("FILELEN", "1");
             textStatus.setVisibility(View.INVISIBLE);
             StopNotificationChannel nc = new StopNotificationChannel(this, addr);
 
@@ -130,12 +135,16 @@ public class StartTransmissionActivity extends AppCompatActivity {
 
             nc.getManager().notify(NOTIFY_ID, nb.build());
 
+            Log.i("FILELEN", "2");
+
             buttonStartTransmission.setText("Идёт трансляция на " + addr);
             buttonStartTransmission.setEnabled(false); // prohibit to start again or return before stop
             Button buttonGoBackST = (Button) findViewById(R.id.buttonGoBackST);
             buttonGoBackST.setEnabled(false);
             Button buttonBackToMainST = (Button) findViewById(R.id.buttonBackToMainST);
             buttonBackToMainST.setEnabled(false);
+
+            Log.i("FILELEN", "3");
 
             /*background mode; doesn't fit <8.0 */
             /*Intent startMain = new Intent(Intent.ACTION_MAIN);
@@ -151,10 +160,14 @@ public class StartTransmissionActivity extends AppCompatActivity {
                 startActivityForResult(captureIntent, RECORD_REQUEST_CODE);
             }*/
 
-            screenRecorder.stopRecord(); // TODO: чисто для теста
+            //screenRecorder.stopRecord(); // TODO: чисто для теста
+            screenRecorder.startRecord();
             DataTransfer dt = new DataTransfer(screenRecorder);
             dt.execute(addr);
-        } else textStatus.setText(tvc.tvStatus);
+        } else {
+            Log.i("FILELEN", tvc.tvStatus);
+            textStatus.setText(tvc.tvStatus);
+        }
     }
 
     public void goBack(View view) { // TODO: check the mode and load the proper screen
