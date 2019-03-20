@@ -14,8 +14,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/company/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret line="64" column="17" lean-forward="true" selection-start-line="57" selection-start-column="16" selection-end-line="64" selection-end-column="17" />
+            <state relative-caret-position="-60">
+              <caret line="24" column="21" selection-start-line="24" selection-start-column="21" selection-end-line="24" selection-end-column="21" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -43,8 +43,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane" />
+      <pane id="Scope" />
       <pane id="PackagesPane" />
     </panes>
   </component>
@@ -123,11 +123,18 @@
       <workItem from="1552645192853" duration="590000" />
       <workItem from="1552649030301" duration="566000" />
       <workItem from="1552663317305" duration="5477000" />
+      <workItem from="1552754845207" duration="5406000" />
+      <workItem from="1552809756761" duration="4103000" />
+      <workItem from="1552819071283" duration="882000" />
+      <workItem from="1552924384667" duration="1940000" />
+      <workItem from="1552978491234" duration="1615000" />
+      <workItem from="1553097617838" duration="2711000" />
+      <workItem from="1553100826640" duration="3499000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="48460000" />
+    <option name="totallyTimeSpent" value="68616000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -141,7 +148,7 @@
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.40015128" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.4462935" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -150,8 +157,8 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.95090014" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4599018" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.30441898" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.45335516" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.3289689" />
@@ -175,23 +182,11 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/com/company/Main.java</url>
-          <line>80</line>
-          <properties />
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
-  </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/com/company/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="64" column="17" lean-forward="true" selection-start-line="57" selection-start-column="16" selection-end-line="64" selection-end-column="17" />
+        <state relative-caret-position="-60">
+          <caret line="24" column="21" selection-start-line="24" selection-start-column="21" selection-end-line="24" selection-end-column="21" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
