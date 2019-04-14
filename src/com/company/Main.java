@@ -67,12 +67,17 @@ public class Main {
                         int res = 0;
                         System.out.println("Accepted");
                         long filesize = dis.readLong();
-                        System.out.println("Размер файла " + filesize);
-                        while (filesize > 0 && (res = dis.read(receiveData, 0 , (int)Math.min(receiveData.length, filesize))) != -1){
-                            fos.write(receiveData, 0, res);
-                            System.out.println(res);
-                            filesize -= res;
-                            System.out.println(filesize);
+                        if (filesize != -11) {
+                            System.out.println("Размер файла " + filesize);
+                            while (filesize > 0 && (res = dis.read(receiveData, 0, (int) Math.min(receiveData.length, filesize))) != -1) {
+                                fos.write(receiveData, 0, res);
+                                System.out.println(res);
+                                filesize -= res;
+                                System.out.println(filesize);
+                            }
+                        } else {
+                            System.out.println("Session finished");
+                            System.exit(0);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
