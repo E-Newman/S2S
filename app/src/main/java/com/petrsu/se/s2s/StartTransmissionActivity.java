@@ -110,7 +110,7 @@ public class StartTransmissionActivity extends AppCompatActivity {
         tvc.execute(addr);
 
         try {
-            Thread.sleep(2000);
+            Thread.sleep(3000);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -128,12 +128,12 @@ public class StartTransmissionActivity extends AppCompatActivity {
         if (tvc.tvStatus.contains("Соединение установлено")) { // раскомментить, когда будем перекидываться сообщениями
             Log.i("FILELEN", "1");
             textStatus.setVisibility(View.INVISIBLE);
-            StopNotificationChannel nc = new StopNotificationChannel(this, addr);
+            //StopNotificationChannel nc = new StopNotificationChannel(this, addr);
 
-            Notification.Builder nb = nc.
-                    getAndroidChannelNotification("S2S", "Идёт трансляция экрана. Нажмите, чтобы остановить");
+            //Notification.Builder nb = nc.
+            //        getAndroidChannelNotification("S2S", "Идёт трансляция экрана. Нажмите, чтобы остановить");
 
-            nc.getManager().notify(NOTIFY_ID, nb.build());
+            //nc.getManager().notify(NOTIFY_ID, nb.build());
 
             Log.i("FILELEN", "2");
 

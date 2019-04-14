@@ -21,7 +21,7 @@ public class StopNotificationChannel extends ContextWrapper {
 
     public void createChannel() {
         // create android channel
-        NotificationChannel androidChannel = new NotificationChannel("STOP_CHANNEL_ID",
+        /*NotificationChannel androidChannel = new NotificationChannel("STOP_CHANNEL_ID",
                 "STOP_CHANNEL", NotificationManager.IMPORTANCE_DEFAULT);
         // Sets whether notifications posted to this channel should display notification lights
         androidChannel.enableLights(false);
@@ -32,7 +32,7 @@ public class StopNotificationChannel extends ContextWrapper {
         // Sets whether notifications posted to this channel appear on the lockscreen or not
         androidChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
 
-        getManager().createNotificationChannel(androidChannel);
+        getManager().createNotificationChannel(androidChannel);*/
     }
 
     public NotificationManager getManager() {
@@ -42,7 +42,7 @@ public class StopNotificationChannel extends ContextWrapper {
         return mManager;
     }
 
-    public Notification.Builder getAndroidChannelNotification(String title, String body) {
+    /*public Notification.Builder getAndroidChannelNotification(String title, String body) {
         Intent myIntent = new Intent(this, StartTransmissionActivity.class); // reopen start transmission activity on push
         myIntent.putExtra("addr", addr);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, myIntent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -56,5 +56,5 @@ public class StopNotificationChannel extends ContextWrapper {
                 .setColor(Color.GREEN)
                 .setContentIntent(pendingIntent)
                 .setProgress(100, 0, true);
-    }
+    }*/
 }
