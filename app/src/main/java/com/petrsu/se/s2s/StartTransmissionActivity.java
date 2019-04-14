@@ -21,16 +21,17 @@ import android.widget.TextView;
 import android.widget.Button;
 
 import java.io.File;
-import java.util.concurrent.TimeUnit;
 
 public class StartTransmissionActivity extends AppCompatActivity {
     public String addr;
     private static final int NOTIFY_ID = 101;
     private static final int STORAGE_REQUEST_CODE = 102;
     private static final int RECORD_REQUEST_CODE = 103;
+    private boolean working = false;
     private MediaProjectionManager mediaProjectionManager;
     private MediaProjection mediaProjection;
     private ScreenRecorder screenRecorder;
+    private DataTransfer dt = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +59,7 @@ public class StartTransmissionActivity extends AppCompatActivity {
             Log.e("PACKDIR", "Error Package name not found ");
         }
 
-        File outFile = new File("/data/user/0/com.petrsu.se.s2s/record.mp4");
+        File outFile = new File("/data/user/0/com.petrsu.se.s2s/record.mp4"); // TODO: shift for any devices
 
         Log.d("FILE", outFile.getAbsolutePath());
         if (outFile.exists()) {
@@ -106,16 +107,18 @@ public class StartTransmissionActivity extends AppCompatActivity {
         Button buttonStartTransmission = (Button) findViewById(R.id.buttonStartTransmission);
         TextView textStatus = (TextView) findViewById(R.id.textStatus);
 
-        TVStatusChecker tvc = new TVStatusChecker();
-        tvc.execute(addr);
+        if (!working) {
+            TVStatusChecker tvc = new TVStatusChecker();
+            tvc.execute(addr);
 
-        try {
-            Thread.sleep(3000);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            try {
+                Thread.sleep(3000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-        if (tvc.tvStatus.contains("Соединение установлено")) Log.i("FILELEN", "Ret: " + tvc.tvStatus);
+            if (tvc.tvStatus.contains("Соединение установлено"))
+                Log.i("FILELEN", "Ret: " + tvc.tvStatus);
 
         /*try {
             tvc.get(3500, TimeUnit.MILLISECONDS);
@@ -125,34 +128,35 @@ public class StartTransmissionActivity extends AppCompatActivity {
             textStatus.setText(tvc.tvStatus);
         }*/
 
-        if (tvc.tvStatus.contains("Соединение установлено")) { // раскомментить, когда будем перекидываться сообщениями
-            Log.i("FILELEN", "1");
-            textStatus.setVisibility(View.INVISIBLE);
-            //StopNotificationChannel nc = new StopNotificationChannel(this, addr);
+            if (tvc.tvStatus.contains("Соединение установлено")) { // раскомментить, когда будем перекидываться сообщениями
+                Log.i("FILELEN", "1");
+                textStatus.setVisibility(View.INVISIBLE);
+                //StopNotificationChannel nc = new StopNotificationChannel(this, addr);
 
-            //Notification.Builder nb = nc.
-            //        getAndroidChannelNotification("S2S", "Идёт трансляция экрана. Нажмите, чтобы остановить");
+                //Notification.Builder nb = nc.
+                //        getAndroidChannelNotification("S2S", "Идёт трансляция экрана. Нажмите, чтобы остановить");
 
-            //nc.getManager().notify(NOTIFY_ID, nb.build());
+                //nc.getManager().notify(NOTIFY_ID, nb.build());
 
-            Log.i("FILELEN", "2");
+                Log.i("FILELEN", "2");
 
-            buttonStartTransmission.setText("Идёт трансляция на " + addr);
-            buttonStartTransmission.setEnabled(false); // prohibit to start again or return before stop
-            Button buttonGoBackST = (Button) findViewById(R.id.buttonGoBackST);
-            buttonGoBackST.setEnabled(false);
-            Button buttonBackToMainST = (Button) findViewById(R.id.buttonBackToMainST);
-            buttonBackToMainST.setEnabled(false);
+                buttonStartTransmission.setText("Остановить трансляцию на " + addr);
+                working = true;
+                //buttonStartTransmission.setEnabled(false); // prohibit to start again or return before stop
+                Button buttonGoBackST = (Button) findViewById(R.id.buttonGoBackST);
+                buttonGoBackST.setEnabled(false);
+                Button buttonBackToMainST = (Button) findViewById(R.id.buttonBackToMainST);
+                buttonBackToMainST.setEnabled(false);
 
-            Log.i("FILELEN", "3");
+                Log.i("FILELEN", "3");
 
-            /*background mode; doesn't fit <8.0 */
+                /*background mode; doesn't fit <8.0 */
             /*Intent startMain = new Intent(Intent.ACTION_MAIN);
             startMain.addCategory(Intent.CATEGORY_HOME);
             startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(startMain);*/
 
-            /* start transmission */
+                /* start transmission */
             /*if(screenRecorder.isRunning()) {
                 screenRecorder.stopRecord();
             } else {
@@ -160,13 +164,18 @@ public class StartTransmissionActivity extends AppCompatActivity {
                 startActivityForResult(captureIntent, RECORD_REQUEST_CODE);
             }*/
 
-            //screenRecorder.stopRecord(); // TODO: чисто для теста
-            screenRecorder.startRecord();
-            DataTransfer dt = new DataTransfer(screenRecorder);
-            dt.execute(addr);
+                //screenRecorder.stopRecord(); // TODO: чисто для теста
+                screenRecorder.startRecord();
+                dt = new DataTransfer(screenRecorder);
+                dt.execute(addr);
+            } else {
+                Log.i("FILELEN", tvc.tvStatus);
+                textStatus.setText(tvc.tvStatus);
+            }
         } else {
-            Log.i("FILELEN", tvc.tvStatus);
-            textStatus.setText(tvc.tvStatus);
+            dt.working = false;
+            buttonStartTransmission.setText("Начать трансляцию на " + addr);
+            working = false;
         }
     }
 

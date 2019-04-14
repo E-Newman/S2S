@@ -18,23 +18,13 @@ class TVStatusChecker extends AsyncTask<String, Void, Integer> {
 
     @Override
     protected Integer doInBackground(String... args){
-        //InetAddress ia;
         Socket controlSock = null;
-        //String message = "Connect";
         String addria = "";
         DataOutputStream dos = null;
         DataInputStream dis = null;
         for (String part : args) {
             addria += part;
         }
-
-        /*try {
-            ia = InetAddress.getByName(addria);
-        } catch (Exception e) {
-            Log.e("FATAL","Failed to resolve IP");
-            tvStatus = "Не удалось получить IP-адрес";
-            return -1;
-        }*/
 
         try {
             controlSock = new Socket(addria,11110);
@@ -46,7 +36,6 @@ class TVStatusChecker extends AsyncTask<String, Void, Integer> {
             return -2;
         }
 
-        //DatagramPacket dp = new DatagramPacket(message.getBytes(), message.getBytes().length,  ia, 11110);
         try {
             dos.writeInt(1);
             controlSock.setSoTimeout(3000);
@@ -66,8 +55,6 @@ class TVStatusChecker extends AsyncTask<String, Void, Integer> {
             }
         }
 
-        //byte [] ans = new byte[1024];
-        //DatagramPacket ap = new DatagramPacket(ans, ans.length);
         try {
 
             int ansCode = dis.readInt();
@@ -129,6 +116,7 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
     public static boolean timerRunning = false;
     private ScreenRecorder screenRecorder;
     private InetAddress ia;
+    public boolean working = true;
 
     public DataTransfer(ScreenRecorder screenRecorder) {
         this.screenRecorder = screenRecorder;
@@ -174,7 +162,7 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
             e.printStackTrace();
         }
 
-        sendTimer.schedule(sendTask, 0, 2000); // TODO: find optimal vid length
+        sendTimer.schedule(sendTask, 0, 3000); // TODO: find optimal vid length
 
         Log.i("START", "Data transfer start");
         while (timerRunning);
@@ -221,11 +209,10 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            //Log.i("FILELEN", Long.toString(len));
-            if (len >= 600000) {
-                screenRecorder.stopRecord();
-                //if (sentFifth == 3) {
-                    videoBytes = new byte[(int)len];
+            if (working) {
+                if (len >= 600000) {
+                    screenRecorder.stopRecord();
+                    videoBytes = new byte[(int) len];
                     int n;
                     FileInputStream fis = null;
                     try {
@@ -240,26 +227,27 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
                         if (sendFile.exists()) {
                             n = fis.read(videoBytes);
                             //while (len > 0 && (n = fis.read(videoBytes)) != -1) {
-                                //Log.i("FILELEN", "n: " + n);
-                                //len -= n;
-                                dos.write(videoBytes, 0, Math.min(videoBytes.length, (int) len));
+                            //Log.i("FILELEN", "n: " + n);
+                            //len -= n;
+                            dos.write(videoBytes, 0, Math.min(videoBytes.length, (int) len));
                             //}
                         } else Log.e("FILE", "Not found");
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    if (sentFifth != 3) {
+                    if (sentFifth != 5) { // debug
                         screenRecorder.startRecord();
                         sentFifth++;
                     } else {
+                            /*try {
+                                dos.writeInt(-1);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }*/
                         sendTimer.cancel();
                         Log.i("FILELEN", "finish");
                     }
-                } /*else {
-                    sentFifth++;
-                    screenRecorder.startRecord();
-                }*/
-            //}
+                }
             /*try {
                 lsock.receive(new DatagramPacket(stopPack, stopPack.length));
                 if (stopPack.toString() == "Interrupt") {
@@ -271,6 +259,15 @@ class DataTransfer extends AsyncTask<String, Void, Integer> {
                 sendTimer.cancel();
                 return;
             }*/
+            } else {
+                try {
+                    dos.writeLong(-11);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                sendTimer.cancel();
+                Log.i("FILELEN", "finish by user");
+            }
         }
     }
 }
