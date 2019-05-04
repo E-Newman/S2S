@@ -2,50 +2,64 @@ package com.example.pvv22.test3;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.util.Arrays;
+import java.net.ServerSocket;
+import java.net.Socket;
+import android.widget.VideoView;
 
 
 public class PhoneView extends Activity {
-    private DatagramSocket server;
-    private boolean interrupt = false;
-    private ImageView iv;
-    private Server serv;
-    private InetAddress ia;
+    private ServerSocket serverInit, serverImg;
+    private Socket forInit, forImg;
+    private DataInputStream dis = null;
+    private DataOutputStream dos = null;
+    private VideoView vv;
+    private int curFile = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        iv = (ImageView) findViewById(R.id.phoneImage);
+        vv = (VideoView) findViewById(R.id.phoneImage);
+        vv.setOnCompletionListener(onEnd);
         setContentView(R.layout.activity_phone_view);
-        ListenInterruptTask it = new ListenInterruptTask();
-        it.execute();
         Server s = new Server();
         s.execute();
     }
-
+    MediaPlayer.OnCompletionListener onEnd = new MediaPlayer.OnCompletionListener() {
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+            vv.setVideoPath("record" + curFile + ".mp4");
+            vv.start();
+            File f = new File("record" + (curFile - 1) + ".mp4");
+            f.delete();
+            curFile++;
+        }
+    };
     private void goBack() {
         Intent i = new Intent(PhoneView.this, MainActivity.class);
         startActivity(i);
     }
 
     public void onBtnClick(View view) {
-        SendInterruptTask sit = new SendInterruptTask();
-        sit.execute();
+        try {
+            dis.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        goBack();
     }
 
-    class SendInterruptTask extends AsyncTask<Void, Void, Void> {
+    /*class SendInterruptTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
             byte[] mesg = "Interrupt".getBytes();
@@ -64,48 +78,50 @@ public class PhoneView extends Activity {
         protected void onPostExecute(Void res) {
             goBack();
         }
-    }
-
-    private class ListenInterruptTask extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                String t = "";
-                DatagramSocket interruptTracker = new DatagramSocket(11113);
-                DatagramPacket dp;
-                while (t != "Interrupt") {
-                    byte[] mesg = new byte[1024];
-                    dp = new DatagramPacket(mesg, mesg.length);
-                    interruptTracker.receive(dp);
-                    ia = dp.getAddress();
-                    t = dp.getData().toString();
-                }
-                interrupt = true;
-                server.close();
-                interruptTracker.close();
-                goBack();
-            } catch (IOException e) {
-                Log.e("emesg", "Проблема при получении пакета");
-            }
-            return null;
-        }
-    }
+    }*/
 
     @SuppressWarnings("unused")
-    class Server extends AsyncTask<Void, Bitmap, Void> {
+    class Server extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            byte[] readBuf = new byte[32000];
+            byte[] receiveData = new byte[8192];
             String mesg = null;
             try {
-                server = new DatagramSocket(11111);
-                Log.i("mesg", "Socket Created");
-                while (!interrupt) {
-                    DatagramPacket recievePacket = new DatagramPacket(readBuf, readBuf.length);
-                    server.receive(recievePacket);
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(readBuf, 0, readBuf.length);
-                    publishProgress(bitmap);
-                    Arrays.fill(readBuf, (byte) 0);
+                serverInit = new ServerSocket(11110);
+                serverImg = new ServerSocket(11112);
+                forInit = serverInit.accept();
+                dis = new DataInputStream(forInit.getInputStream());
+                dos = new DataOutputStream(forInit.getOutputStream());
+                int init = dis.readInt();
+                int i = 1;
+                if (init == 1){
+                    dos.writeInt(10);
+                    dis.close();
+                    dos.close();
+                    forInit.close();
+                    forImg = serverImg.accept();
+                    dis = new DataInputStream(forImg.getInputStream());
+                }
+                long fileSize;
+                while (true) {
+                    int res = 0;
+                    File videoFile = new File("record" + i + ".mp4");
+                    FileOutputStream fos = new FileOutputStream(videoFile);
+                    fileSize = dis.readLong();
+                    if (fileSize == -11){
+                        dis.close();
+                        forImg.close();
+                        break;
+                    }
+                    while (fileSize > 0 && (res = dis.read(receiveData, 0, (int) Math.min(receiveData.length, fileSize))) != -1) {
+                        fos.write(receiveData, 0, res);
+                        fileSize -= res;
+                    }
+                    if (i == 2)
+                        publishProgress();
+                }
+                if (fileSize == -11){
+                    goBack();
                 }
             } catch (IOException e) {
                 Log.e("emesg", "Ошибка при получении пакета");
@@ -114,8 +130,10 @@ public class PhoneView extends Activity {
         }
 
         @Override
-        protected void onProgressUpdate(Bitmap... values) {
-            iv.setImageBitmap(values[0]);
+        protected void onProgressUpdate(Void... values) {
+            vv.setVideoPath("record" + curFile + ".mp4");
+            curFile++;
+            vv.start();
         }
     }
 }
