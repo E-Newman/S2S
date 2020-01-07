@@ -18,8 +18,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/company/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="275">
-              <caret line="69" column="46" lean-forward="true" selection-start-line="69" selection-start-column="46" selection-end-line="69" selection-end-column="46" />
+            <state relative-caret-position="270">
+              <caret line="79" column="32" lean-forward="true" selection-start-line="79" selection-start-column="32" selection-end-line="79" selection-end-column="32" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -53,9 +53,9 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="ProjectPane" />
       <pane id="PackagesPane" />
       <pane id="Scope" />
+      <pane id="ProjectPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -147,11 +147,39 @@
       <workItem from="1554452815640" duration="50000" />
       <workItem from="1554641898434" duration="1134000" />
       <workItem from="1555231931525" duration="2254000" />
+      <workItem from="1555585913307" duration="9000" />
+      <workItem from="1555587159443" duration="1283000" />
+      <workItem from="1555660076639" duration="632000" />
+      <workItem from="1555661307449" duration="695000" />
+      <workItem from="1555662947132" duration="211000" />
+      <workItem from="1556359788382" duration="316000" />
+      <workItem from="1557390145068" duration="1461000" />
+      <workItem from="1568796888043" duration="611000" />
+      <workItem from="1568805412771" duration="258000" />
+      <workItem from="1571925053836" duration="3695000" />
+      <workItem from="1572450721166" duration="1997000" />
+      <workItem from="1572453926218" duration="2864000" />
+      <workItem from="1572771256945" duration="2135000" />
+      <workItem from="1573027766944" duration="298000" />
+      <workItem from="1573112359361" duration="562000" />
+      <workItem from="1573146355217" duration="3225000" />
+      <workItem from="1573150660576" duration="1732000" />
+      <workItem from="1573152785997" duration="534000" />
+      <workItem from="1573200414078" duration="1653000" />
+      <workItem from="1573542379306" duration="723000" />
+      <workItem from="1573579024299" duration="1150000" />
+      <workItem from="1573647251976" duration="673000" />
+      <workItem from="1574583553572" duration="340000" />
+      <workItem from="1574777215118" duration="76000" />
+      <workItem from="1577293305360" duration="1488000" />
+      <workItem from="1577295892448" duration="914000" />
+      <workItem from="1578321044571" duration="1091000" />
+      <workItem from="1578398873184" duration="768000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="74411000" />
+    <option name="totallyTimeSpent" value="105994000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -165,7 +193,7 @@
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.21860817" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.3343419" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -174,7 +202,7 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.23731588" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.24222586" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.45335516" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -203,8 +231,8 @@
     <entry file="jar://D:/Program Files/Java/jdk-12/lib/src.zip!/java.base/java/io/DataInputStream.java" />
     <entry file="file://$PROJECT_DIR$/src/com/company/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="275">
-          <caret line="69" column="46" lean-forward="true" selection-start-line="69" selection-start-column="46" selection-end-line="69" selection-end-column="46" />
+        <state relative-caret-position="270">
+          <caret line="79" column="32" lean-forward="true" selection-start-line="79" selection-start-column="32" selection-end-line="79" selection-end-column="32" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

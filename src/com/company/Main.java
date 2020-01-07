@@ -2,6 +2,7 @@ package com.company;
 
 import java.io.*;
 import java.net.*;
+import java.time.LocalDateTime;
 
 public class Main {
 
@@ -18,7 +19,7 @@ public class Main {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        byte[] receiveData = new byte[8192];
+        //byte[] receiveData = new byte[8192];
         //byte[] sendData = new byte[1024];
         int initCode = 0;
         int i = 1;
@@ -51,7 +52,7 @@ public class Main {
                     try {
                         videoFile = new File("C:/Users/EP/record" + i +".mp4");
                         i++;
-                        //System.out.println("Video");
+                        System.out.println(i + " " + LocalDateTime.now().toString());
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
@@ -68,12 +69,13 @@ public class Main {
                         System.out.println("Accepted");
                         long filesize = dis.readLong();
                         if (filesize != -11) {
+                            byte[] receiveData = new byte[(int)filesize];
                             System.out.println("Размер файла " + filesize);
                             while (filesize > 0 && (res = dis.read(receiveData, 0, (int) Math.min(receiveData.length, filesize))) != -1) {
                                 fos.write(receiveData, 0, res);
-                                System.out.println(res);
+                                //System.out.println(res);
                                 filesize -= res;
-                                System.out.println(filesize);
+                                //System.out.println(filesize);
                             }
                         } else {
                             System.out.println("Session finished");
